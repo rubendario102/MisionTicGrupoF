@@ -1,21 +1,32 @@
+function validar(){
+    var p1 = document.getElementById("ActualizarPassword").value;
+    var p2 = document.getElementById("confirActualizarPassword").value;
 
-var i=3;
-function validar_formulario(){    
-var p1 = document.getElementById("usuario").value;
-var p2 = document.getElementById("password").value;
+    var espacios = false;
+var cont = 0;
 
-    if(p1=="test" && p2=="test" && i>0){
-        alert("Ingreso Exitoso");   
-    }else if(i==0){
-        var  boton = document.getElementsbyName("usuario");
-        var  boton = document.getElementsbyName("password");
-        boton.disabled = true;
-    }else{
-        alert("Le quedan "+(i)+" intentos");
-        i--;
-    }
+while (!espacios && (cont < p1.length)) {
+  if (p1.charAt(cont) == " ")
+    espacios = true;
+  cont++;
+}
    
+if (espacios) {
+  alert ("La contraseña no puede contener espacios en blanco");
+  return false;
 }
 
+if (p1.length == 0 || p2.length == 0) {
+    alert("Los campos de la contraseña no pueden quedar vacios");
+    return false;
+}
 
-    
+  if (p1 != p2) {
+    alert("Las contraseñas deben de coincidir");
+    return false;
+  } else {
+    alert("Todo esta correcto");
+    return true; 
+  }
+
+}
