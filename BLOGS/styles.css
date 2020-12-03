@@ -1,13 +1,3 @@
-.margin-card{
-    margin: 30px;
-}
-
-.footer-card{
-    font-size: 0.7rem;
-}
-
-.font-card{
-    font-size: 0.8rem;
 body,html{
     margin: 0;
     padding: 0;
@@ -32,11 +22,53 @@ body,html{
     text-align: right!important;
 }
 
+.navbar{
+    background-color: #ffffff!important;
+}
 
+#contenedor-principal{
+    padding-top: 1%;
+}
 
+#contenido-pagina{
+    width: 100%;
+    position: absolute;
+    padding-right: 25%;
+}
+
+#contenido-barra{
+    width: 250px;
+    padding-left: 75%;
+}
+
+.sidebar-nav{
+    padding-right: 30%;
+    padding-top: 10%;
+    list-style: none;
+}
+
+#txtCuerpo{
+    height: 550px
+}
 
 @media(max-width: 400px){
     .login{
         width: 90%;
     }
+}
+.margin-card{
+    margin: 30px;
+}
+
+.footer-card{
+    font-size: 0.7rem;
+}
+.font-card{
+    font-size: 0.8rem;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background-color: #dae8fc;
 }
