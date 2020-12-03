@@ -56,3 +56,19 @@ body,html{
         width: 90%;
     }
 }
+.margin-card{
+    margin: 30px;
+}
+
+.footer-card{
+    font-size: 0.7rem;
+}
+.font-card{
+    font-size: 0.8rem;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background-color: #dae8fc;
+}
