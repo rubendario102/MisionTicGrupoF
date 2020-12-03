@@ -72,3 +72,10 @@ body,html{
     position: relative;
     background-color: #dae8fc;
 }
+
+
+.float-right{
+    text-align: right!important;
+    position: relative;
+    
+}
