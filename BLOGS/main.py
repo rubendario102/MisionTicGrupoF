@@ -5,12 +5,12 @@ import os
 app = Flask (__name__)
 app.secret_key = os.urandom(24)
 
-@app.route('/')
+@app.route('/') # Incluido por Edwin Polo. Abre la Vista de login
 
 def principal():
     return render_template('login.html')
 
-@app.route('/crearEntrada',methods=['POST','GET'])
+@app.route('/crearEntrada',methods=['POST','GET']) # Incluido por Edwin Polo, para ir de Login a Vista Crear entrada
 
 def loginPost():
     if request.method=="POST":
@@ -48,6 +48,10 @@ def actualizar():
         return render_template("ActualizarContraseña.html")
     except:
          return render_template("ActualizarContraseña.html")
+
+@app.route('/registro') #incluido por Edwin Polo . ruta para ir de Vista Login a Vista Crear Usuario
+def registroUsuario():
+    return render_template('registroUsuario.html')
 
 
 if __name__ == "__main__":
