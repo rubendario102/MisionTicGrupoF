@@ -16,7 +16,7 @@ def loginPost():
         usuario= request.form['usuario']
         clave=request.form['password']
         if usuario=="edwin@hotmail.com" and clave=="123":
-            return render_template('crearEntrada.html')
+            return render_template('vistaBlog.html')
         else:
             return "Acceso Invalido"
     else:
@@ -108,6 +108,11 @@ def crearBlog():
 @app.route('/vistaBlog')
 def vistaBlog():
     return render_template('vistaBlog.html') 
+
+#Ruben: Ruta para actualizar blogs desde vistablogs
+@app.route('/actualizarBlogs')
+def actualizarBlogs():
+    return render_template('actualizarEntrada.html') 
 
 if __name__ == "__main__":
     app.run(debug=True)
