@@ -26,7 +26,7 @@ def loginPost():
 def registroUsuario():
     return render_template('registroUsuario.html')
       
-@app.route('/actualizarContraseña',methods=['POST','GET'])
+@app.route('/actualizarPassword',methods=['POST','GET'])
 def actualizar():
     try:
         if request.method=='POST':
@@ -53,7 +53,7 @@ def actualizar():
          return render_template("ActualizarContraseña.html")
  
 #Anderson: Ruta una vez creado el usuario ser dirigido a la pagina del login
-@app.route('/login',methods=["POST"])
+@app.route('/login',methods=["POST","GET"])
 def validarCampos():
     try:
         if request.method=="POST":
