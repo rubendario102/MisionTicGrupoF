@@ -25,8 +25,9 @@ def loginPost():
 @app.route('/registro') #incluido por Edwin Polo . ruta para ir de Vista Login a Vista Crear Usuario
 def registroUsuario():
     return render_template('registroUsuario.html')
+      
+@app.route('/actualizarPassword',methods=['POST','GET'])
 
-@app.route('/actualizarContraseña',methods=['POST','GET'])
 def actualizar():
     try:
         if request.method=='POST':
@@ -53,7 +54,7 @@ def actualizar():
         return render_template("ActualizarContraseña.html")
 
 #Anderson: Ruta una vez creado el usuario ser dirigido a la pagina del login
-@app.route('/login',methods=["POST"])
+@app.route('/login',methods=["POST","GET"])
 def validarCampos():
     try:
         if request.method=="POST":
