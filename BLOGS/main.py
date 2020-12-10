@@ -21,12 +21,13 @@ def loginPost():
             return "Acceso Invalido"
     else:
         return "Metodo no permitido"
-     
+
 @app.route('/registro') #incluido por Edwin Polo . ruta para ir de Vista Login a Vista Crear Usuario
 def registroUsuario():
     return render_template('registroUsuario.html')
       
 @app.route('/actualizarPassword',methods=['POST','GET'])
+
 def actualizar():
     try:
         if request.method=='POST':
@@ -50,8 +51,8 @@ def actualizar():
                 return render_template("ActualizarContraseña.html")
         return render_template("ActualizarContraseña.html")
     except:
-         return render_template("ActualizarContraseña.html")
- 
+        return render_template("ActualizarContraseña.html")
+
 #Anderson: Ruta una vez creado el usuario ser dirigido a la pagina del login
 @app.route('/login',methods=["POST","GET"])
 def validarCampos():
@@ -104,15 +105,33 @@ def crearBlog():
         flash(error)
         return render_template('crearEntrada.html')
 
+@app.route('/crearBlog')
+def crearBlog2():
+    return render_template('crearEntrada.html')
+
+@app.route('/eliminarBlog/<int:post_id>')
+def eliminarBlog(post_id):
+    #delete base de datos
+    return render_template("vistaBlog.html")
+
 #Anderson: Ruta para ir a los blogs publicados desde crearEntrada
 @app.route('/vistaBlog')
 def vistaBlog():
     return render_template('vistaBlog.html') 
 
 #Ruben: Ruta para actualizar blogs desde vistablogs
-@app.route('/actualizarBlogs')
-def actualizarBlogs():
-    return render_template('actualizarEntrada.html')
+@app.route('/actualizarBlogs/<int:post_id>', methods=['GET', 'POST'])
+def actualizarBlogs(post_id):
+    if request.method=="GET":
+        #consulta base de datos por id del post (SELECT * FROM blogs where id_blog = {post_id})
+        titulo = "Titulo blog1"
+        cuerpo = "Lorem ipsum dolor sit amet, consectetur adipiscing Lorem ipsum dolor sit amet, consectetur adipiscing Lorem ipsum dolor sit amet, consectetur adipiscing"
+        return render_template("actualizarEntrada.html", post_id=post_id, titulo=titulo, cuerpo=cuerpo)
+    else:
+        titulo = request.form['txtTitulo']
+        cuerpo = request.form['txtCuerpo']
+        #update en ala base de datos
+        return render_template("vistaBlog.html")
 
 @app.route('/recuperar') ## Edwin Polo, para ir a la vista de recuperar contraseña
 def recuperarContraseña():
