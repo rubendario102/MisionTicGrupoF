@@ -8,41 +8,37 @@
     <!-- Iconos -->
     <link href="https://unpkg.com/ionicons@4.5.10-0/dist/css/ionicons.min.css" rel="stylesheet">
     <!-- Mi CSS -->
-    <link href="styles.css" rel="stylesheet" type="text/css">
+    <link href="{{url_for('static',filename='styles.css') }}" rel="stylesheet" type="text/css">
     <title>Actualizar Blog</title>
 </head>
 <body>
     <div id="contenedor-principal">
-        <!-- Contenido de la pagina -->
-        <div id="contenido-pagina">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <nav class="navbar navbar-light bg-light">
-                            <a class="navbar-brand" href="#"><i class="icon ion-md-arrow-round-back"></i> Volver a la página de perfil</a>
-                        </nav>
-                        <br>
-                        <input id="txtTitulo" name="txtTitulo" type="text" placeholder="Titulo*" class="form-control input-md">
-                        <br>
-                        <textarea id="txtCuerpo" name="txtCuerpo" class="form-control"></textarea>
+        <form action="{{ url_for('actualizarBlogs',post_id= post_id) }}" method="POST">
+            <!-- Contenido de la pagina -->
+            <div id="contenido-pagina">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <nav class="navbar navbar-light bg-light">
+                                <a class="navbar-brand" href="{{ url_for('vistaBlog') }}"><i class="icon ion-md-arrow-round-back"></i> Volver a la página de inicio</a>
+                            </nav>
+                            <br>
+                            <input id="txtTitulo" name="txtTitulo" type="text" placeholder="Titulo*" class="form-control input-md" value="{{ titulo }}"
+                            <br>
+                            <textarea id="txtCuerpo" name="txtCuerpo" class="form-control">{{ cuerpo }}</textarea>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- barra lateral -->
-        <div id="contenido-barra">
-            <ul class="sidebar-nav">
-                <li>
-                    <input type="submit" value="Actualizar" class="btn btn-primary">
-                </li>
-                <br>
-                <br>
-                <li>
-                    <input type="submit" value="Guardar Como" class="btn btn-primary">
-                </li>
-            </ul>
-        </div>
+            <!-- barra lateral -->
+            <div id="contenido-barra">
+                <button type="submit" class="btn btn-primary">Actualizar</button>
+                    <br>
+                    <br>
+                <a type="bottom" class="btn btn-primary"> Cancelar </a>
+            </div>
+        </form>
     </div>
     <!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
