@@ -6,7 +6,7 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
-    <link rel="stylesheet"  href="styles.css">
+    <link rel="stylesheet"  href="{{ url_for('static', filename='styles.css') }}">
     <title>Home</title>
 </head>
 <body>
@@ -23,14 +23,14 @@
         </div>
         <div class="row" style="margin: 30px;margin-bottom: -27px;">
             <div class="col-6 offset-3">
-                <button type="button" class="btn btn-primary">Crear Post</button>
+                <a href="{{ url_for('crearBlog2') }}" type="button" class="btn btn-primary">Crear Post</a>
             </div>
         </div>
         <div class="row margin-card" >
             <div class="col-6 offset-3">
                 <div class="card">
                     <div class="card-header">
-                    Como diseñar páginas de blogs <span class="float-right"><img src="{{ url_for('static', filename='editar.png') }}"> <img src="{{ url_for('static', filename='eliminar.png') }}"></span> 
+                    <a href="{{ url_for('crearBlog') }}">Como diseñar páginas de blogs</a><span class="float-right"><a href="{{ url_for('actualizarBlogs',post_id=1) }}"><img src="{{ url_for('static', filename='editar.png') }}"></a> <a href="{{ url_for('eliminarBlog',post_id=1) }}"><img src="{{ url_for('static', filename='eliminar.png') }}"></a></span> 
                     </div>
                     <div class="card-body">
                     <blockquote class="blockquote mb-0">
@@ -45,7 +45,7 @@
             <div class="col-6 offset-3">
                 <div class="card">
                     <div class="card-header">
-                    Hack red wifi <span class="float-right"><img src="{{ url_for('static', filename='editar.png') }}"> <img src="{{ url_for('static', filename='eliminar.png') }}"></span>
+                    Hack red wifi <span class="float-right"><a href="{{ url_for('actualizarBlogs',post_id=2) }}"><img src="{{ url_for('static', filename='editar.png') }}"></a> <a href="{{ url_for('eliminarBlog',post_id=1) }}"><img src="{{ url_for('static', filename='eliminar.png') }}"></a></span>
                     </div>
                     <div class="card-body">
                     <blockquote class="blockquote mb-0">
@@ -60,7 +60,7 @@
             <div class="col-6 offset-3">
                 <div class="card">
                     <div class="card-header">
-                    Comida de lata <span class="float-right"><img src="{{ url_for('static', filename='editar.png') }}"> <img src="{{ url_for('static', filename='eliminar.png') }}"></span>
+                    Comida de lata <span class="float-right"><a href="{{ url_for('actualizarBlogs',post_id=3) }}"><img src="{{ url_for('static', filename='editar.png') }}"></a> <a href="{{ url_for('eliminarBlog',post_id=1) }}"><img src="{{ url_for('static', filename='eliminar.png') }}"></a></span>
                     </div>
                     <div class="card-body">
                     <blockquote class="blockquote mb-0">
