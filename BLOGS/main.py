@@ -21,7 +21,7 @@ def loginPost():
     else:
         return "Metodo no permitido"
 
-#Ruta una vez creado el usuario ser dirigido a la pagina del login
+#Anderson: Ruta una vez creado el usuario ser dirigido a la pagina del login
 @app.route('/login',methods=["POST"])
 def validarCampos():
     try:
@@ -55,7 +55,7 @@ def validarCampos():
     except:
         return render_template('registroUsuario.html')
 
-#Ruta para ver el blog que se acaba de publicar
+#Anderson: Ruta para ver el blog que se acaba de publicar
 @app.route('/blogPublicado',methods=["GET"])
 def crearBlog():
     titulo = request.args.get('titulo')
@@ -73,7 +73,7 @@ def crearBlog():
         flash(error)
         return render_template('crearEntrada.html')
 
-#Ruta para ir a los blogs publicados desde crearEntrada
+#Anderson: Ruta para ir a los blogs publicados desde crearEntrada
 @app.route('/vistaBlog')
 def vistaBlog():
     return render_template('vistaBlog.html') 
