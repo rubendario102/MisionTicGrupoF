@@ -10,7 +10,7 @@ app.secret_key = os.urandom(24)
 def principal():
     return render_template('login.html')
 
-@app.route('/crearEntrada',methods=['POST','GET']) # Incluido por Edwin Polo, para ir de Login a Vista Crear entrada
+@app.route('/vistaBlog1',methods=['POST','GET']) # Incluido por Edwin Polo, para ir de Login a VistaBlog
 def loginPost():
     if request.method=="POST":
         usuario= request.form['usuario']
@@ -112,7 +112,11 @@ def vistaBlog():
 #Ruben: Ruta para actualizar blogs desde vistablogs
 @app.route('/actualizarBlogs')
 def actualizarBlogs():
-    return render_template('actualizarEntrada.html') 
+    return render_template('actualizarEntrada.html')
+
+@app.route('/recuperar') ## Edwin Polo, para ir a la vista de recuperar contraseña
+def recuperarContraseña():
+    return render_template('Recuperar.html') 
 
 if __name__ == "__main__":
     app.run(debug=True)
