@@ -1,26 +1,15 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recuperar Contraseña</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="{{url_for('static',filename='styles.css') }}">
-</head>
-    <body>
-        
-        <div>
-            <center>
-                <form class="login" action="/">
-                    <label for="name">Ingresar Correo</label>
-                    <input name="name" type="email" value="Ingrese correo" /> 
-                    <br /> 
-                    <br /> 
-                    <button class="btn btn-primary" type="submit" value="Submit" onclick="alert('Verifique su correo electronico para recuperar su contraseña. Ahora será dirigido a la sesión de inicio');">Enviar Correo</button>
-                </form>
+{% extends "base.html" %}
 
-            </center>
-        </div>
-    </body>
-        
-</html>
+{% block contenido %}
+    <div>
+        <center>
+            <form class="login" action="/">
+                <label for="name">Ingresar Correo</label>
+                <input name="name" type="email" value="Ingrese correo" /> 
+                <br /> 
+                <br /> 
+                <button class="btn btn-primary" type="submit" value="Submit" onclick="alert('Verifique su correo electronico para recuperar su contraseña. Ahora será dirigido a la sesión de inicio');">Enviar Correo</button>
+            </form>
+        </center>
+    </div>
+{% endblock %}
