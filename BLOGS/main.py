@@ -1,7 +1,10 @@
-from flask import Flask,render_template,request,flash, url_for, redirect
+from flask import *
 import yagmail as yagmail
 import utils 
 import os
+from markupsafe import escape
+from werkzeug.security import generate_password_hash, check_password_hash
+from formularios import formActualizar
 
 app = Flask (__name__)
 app.secret_key = os.urandom(24)
@@ -25,14 +28,15 @@ def loginPost():
 @app.route('/registro') #incluido por Edwin Polo . ruta para ir de Vista Login a Vista Crear Usuario
 def registroUsuario():
     return render_template('registroUsuario.html')
-      
-@app.route('/actualizarPassword',methods=['POST','GET'])
 
+#Andrea: Ruta para cambiar contraseña       
+@app.route('/actualizarPassword/',methods=['POST','GET'])
 def actualizar():
     try:
+        form = formActualizar()
         if request.method=='POST':
-            clave1 = request.form["password1"]
-            clave2 = request.form["password2"]
+            clave1 = form.clave1.data
+            clave2 = form.clave2.data
             error = None
 
             if not utils.isPasswordValid(clave1):
@@ -51,7 +55,24 @@ def actualizar():
                 return render_template("ActualizarContraseña.html")
         return render_template("ActualizarContraseña.html")
     except:
-        return render_template("ActualizarContraseña.html")
+        return render_template("ActualizarContraseña.html", form = form)
+
+@app.route("/login/prueba/encriptar", methods=['GET','POST'])
+def insertar():
+    form = formLogin()
+    if request.method == "POST":
+        usuari = escape(request.form["usuario"])
+        clave = escape(request.form["clave"])
+        hashclave = generate_password_hash(clave)
+        try:
+            with sqlite3.connect('estudiantes_M.db') as con: 
+                cur = con.cursor()
+                cur.execute("INSERT INTO Usuario(username,clave)VALUES(?,?)",(usuari,hashclave))
+                con.commit()
+                return "Guardado satisfactoriamente"
+        except: 
+            con.rollback()
+    return "No se pudo guardar"
 
 #Anderson: Ruta una vez creado el usuario ser dirigido a la pagina del login
 @app.route('/login',methods=["POST","GET"])

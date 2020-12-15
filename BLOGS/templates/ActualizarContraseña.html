@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 
 {% block contenido %}
+<section class="content">
+    {%for message in get_flashed_messages() %}
+    <div class="flash">{{message}}</div>
+    {%endfor%}
+</section>
     <form name="fomulario" class="login" method="post" action="{{url_for('actualizar')}}"> 
         <div class="form-group row">
             <div class="row w-100">
@@ -9,14 +14,17 @@
                 </div>	
             </div>
             <br><br><br><br><br>
-            <label for="passwordUsuarioNuevo" class="col-sm-5 col-form-label text-left">Contraseña:*</label>
+            <label class='col-sm-5 col-form-label text-left' for='{{form.clave1}}'> {{form.clave1.label}} </label>
             <div class="col-sm-7">
-                <input type="password" class="form-control" id="password1" name="password1" placeholder="Ingresa tu contraseña">
+                {{form.clave1(class="form-control")}}
             </div>
             <br><br><br>
-            <label for="confirPasswordUsuarioNuevo" class="col-sm-5 col-form-label text-left">Confirmar contraseña:*</label>
+            <label class='col-sm-5 col-form-label text-left' for='{{form.clave1}}'> {{form.clave2.label}} </label>
             <div class="col-sm-7">
-                <input type="password" class="form-control" id="password2" name="password2" placeholder="Ingresa tu contraseña de nuevo">
+                {{form.clave2(class="form-control")}}
+            <!-- <label for="confirPasswordUsuarioNuevo" class="col-sm-5 col-form-label text-left">Confirmar contraseña:*</label>
+            <div class="col-sm-7">
+                <input type="password" class="form-control" id="password2" name="password2" placeholder="Ingresa tu contraseña de nuevo"> -->
             </div>
             <br><br><br><br>
             <div class="row w-100">
