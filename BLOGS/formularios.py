@@ -20,3 +20,7 @@ class formLogin(FlaskForm):
     enviar = SubmitField("Enviar",render_kw={"onmouseover":"guardarEst()"})
     insertar = SubmitField("insertar",render_kw={"onmouseover":"insertar()"})
     guardar = SubmitField("Guardar", render_kw={"onmouseover":"insertar()"})
+
+class formActualizar(FlaskForm):
+    clave1 = PasswordField("Contraseña:*",validators = [DataRequired(message="No dejar vacío, completar")],render_kw={"placeholder":"Ingresa tu contraseña"})
+    clave2 = PasswordField("Confirmar contraseña:*",validators = [DataRequired(message="No dejar vacío, completar")],render_kw={"placeholder":"Confirma tu contraseña"})

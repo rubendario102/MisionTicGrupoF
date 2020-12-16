@@ -1,4 +1,5 @@
 from flask import *
+
 import sqlite3
 import yagmail as yagmail
 import utils 
@@ -30,13 +31,14 @@ def loginPost():
 def registroUsuario():
     return render_template('registroUsuario.html')
 
-@app.route('/actualizarPassword',methods=['POST','GET'])
-
+#Andrea: Ruta para cambiar contraseña       
+@app.route('/actualizarPassword/',methods=['POST','GET'])
 def actualizar():
     try:
+        form = formActualizar()
         if request.method=='POST':
-            clave1 = request.form["password1"]
-            clave2 = request.form["password2"]
+            clave1 = form.clave1.data
+            clave2 = form.clave2.data
             error = None
 
             if not utils.isPasswordValid(clave1):
@@ -55,7 +57,7 @@ def actualizar():
                 return render_template("ActualizarContraseña.html")
         return render_template("ActualizarContraseña.html")
     except:
-        return render_template("ActualizarContraseña.html")
+        return render_template("ActualizarContraseña.html", form = form)
 
 #Anderson: Ruta una vez creado el usuario ser dirigido a la pagina del login
 @app.route('/login',methods=["POST","GET"])
