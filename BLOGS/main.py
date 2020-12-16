@@ -57,23 +57,6 @@ def actualizar():
     except:
         return render_template("ActualizarContraseña.html", form = form)
 
-@app.route("/login/prueba/encriptar", methods=['GET','POST'])
-def insertar():
-    form = formLogin()
-    if request.method == "POST":
-        usuari = escape(request.form["usuario"])
-        clave = escape(request.form["clave"])
-        hashclave = generate_password_hash(clave)
-        try:
-            with sqlite3.connect('estudiantes_M.db') as con: 
-                cur = con.cursor()
-                cur.execute("INSERT INTO Usuario(username,clave)VALUES(?,?)",(usuari,hashclave))
-                con.commit()
-                return "Guardado satisfactoriamente"
-        except: 
-            con.rollback()
-    return "No se pudo guardar"
-
 #Anderson: Ruta una vez creado el usuario ser dirigido a la pagina del login
 @app.route('/login',methods=["POST","GET"])
 def validarCampos():
