@@ -17,51 +17,26 @@
                 <a href="{{ url_for('crearBlog2') }}" type="button" class="btn btn-primary">Crear Post</a>
             </div>
         </div>
-        <div class="row margin-card" >
-            <div class="col-6 offset-3">
-                <div class="card">
-                    <div class="card-header">
-                    <a href="{{ url_for('crearBlog') }}">Como diseñar páginas de blogs</a><span class="float-right"><a href="{{ url_for('actualizarBlogs',post_id=1) }}"><img src="{{ url_for('static', filename='editar.png') }}"></a> <a href="{{ url_for('eliminarBlog',post_id=1) }}"><img src="{{ url_for('static', filename='eliminar.png') }}"></a></span> 
-                    </div>
-                    <div class="card-body">
-                    <blockquote class="blockquote mb-0">
-                        <p class="font-card">Lorem ipsum dolor sit amet, consectetur adipiscing....</p>
-                        <footer class="blockquote-footer footer-card">Creado por:   <cite title="Source Title">User 1</cite> (02 Diciembre 2020)</footer>
-                    </blockquote>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row margin-card">
-            <div class="col-6 offset-3">
-                <div class="card">
-                    <div class="card-header">
-                    Hack red wifi <span class="float-right"><a href="{{ url_for('actualizarBlogs',post_id=2) }}"><img src="{{ url_for('static', filename='editar.png') }}"></a> <a href="{{ url_for('eliminarBlog',post_id=1) }}"><img src="{{ url_for('static', filename='eliminar.png') }}"></a></span>
-                    </div>
-                    <div class="card-body">
-                    <blockquote class="blockquote mb-0">
-                        <p class="font-card">Lorem ipsum dolor sit amet, consectetur adipiscing....</p>
-                        <footer class="blockquote-footer footer-card">Creado por:   <cite title="Source Title">User 2</cite> (02 Diciembre 2020)</footer>
-                    </blockquote>
+        {%for r in row%}
+            <div class="row margin-card" >
+                <div class="col-6 offset-3">
+                    <div class="card">
+                        <div class="card-header">
+                        <a href="{{ url_for('crearBlog') }}"> {{r["titulo"]}} </a>
+                        {% if r["id_Usuario"] == user_id %} 
+                        <span class="float-right"><a href="{{ url_for('actualizarBlogs',post_id=r['idBlogs']) }}"><img src="{{ url_for('static', filename='editar.png') }}"></a> <a href="{{ url_for('eliminarBlog',post_id=r['idBlogs']) }}"><img src="{{ url_for('static', filename='eliminar.png') }}"></a></span> 
+                        {% endif %} 
+                        </div>
+                        <div class="card-body">
+                        <blockquote class="blockquote mb-0">
+                            <p class="font-card">{{r["cuerpo"]}}</p>
+                            <footer class="blockquote-footer footer-card">Creado por:   <cite title="Source Title">User 1</cite> (02 Diciembre 2020)</footer>
+                        </blockquote>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="row margin-card">
-            <div class="col-6 offset-3">
-                <div class="card">
-                    <div class="card-header">
-                    Comida de lata <span class="float-right"><a href="{{ url_for('actualizarBlogs',post_id=3) }}"><img src="{{ url_for('static', filename='editar.png') }}"></a> <a href="{{ url_for('eliminarBlog',post_id=1) }}"><img src="{{ url_for('static', filename='eliminar.png') }}"></a></span>
-                    </div>
-                    <div class="card-body">
-                    <blockquote class="blockquote mb-0">
-                        <p class="font-card">Lorem ipsum dolor sit amet, consectetur adipiscing....</p>
-                        <footer class="blockquote-footer footer-card">Creado por:   <cite title="Source Title">User 3</cite> (02 Diciembre 2020)</footer>
-                    </blockquote>
-                    </div>
-                </div>
-            </div>
-        </div>
+        {%endfor%}
     </div>
     <!-- Bootstrap jquery -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
