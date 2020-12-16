@@ -1,10 +1,12 @@
 from flask import *
+
+import sqlite3
 import yagmail as yagmail
 import utils 
 import os
+import hashlib
 from markupsafe import escape
 from werkzeug.security import generate_password_hash, check_password_hash
-from formularios import formActualizar
 
 app = Flask (__name__)
 app.secret_key = os.urandom(24)
@@ -19,7 +21,7 @@ def loginPost():
         usuario= request.form['usuario']
         clave=request.form['password']
         if usuario=="edwin@hotmail.com" and clave=="123":
-            return render_template('vistaBlog.html')
+            return redirect(url_for('vistaBlog'))
         else:
             return "Acceso Invalido"
     else:
@@ -115,27 +117,78 @@ def crearBlog2():
 
 @app.route('/eliminarBlog/<int:post_id>')
 def eliminarBlog(post_id):
-    #delete base de datos
-    return render_template("vistaBlog.html")
+    mensaje_eliminar = 'no entro '
+    estado = 'inactivo'
+    try:
+        with sqlite3.connect('Blogs.db') as con: 
+            cur = con.cursor()
+            cur.execute("UPDATE Blogs SET estadoBlog = ? WHERE idBlogs = ?",[estado,post_id])
+            con.commit()
+            if con.total_changes>0:
+                mensaje_eliminar = "Blog modificado"
+            else:
+                mensaje_eliminar = "Blog no se pudo modificar"
+    except:
+        con.rollback()
+    finally:
+        # return mensaje_eliminar
+        return redirect(url_for('vistaBlog'))
+    # return render_template("vistaBlog.html")
 
 #Anderson: Ruta para ir a los blogs publicados desde crearEntrada
 @app.route('/vistaBlog')
 def vistaBlog():
-    return render_template('vistaBlog.html') 
+    session["usuario"]=1
+    user_id = session['usuario']
+    try: 
+        with sqlite3.connect('Blogs.db') as con:
+            con.row_factory = sqlite3.Row 
+            cur = con.cursor()
+            cur.execute("SELECT * from Blogs where estadoBlog = 'activo'") 
+            row = cur.fetchall()
+            return render_template('vistaBlog.html',row = row, user_id = user_id)
+    except:
+        return "No se pudo listar"
 
 #Ruben: Ruta para actualizar blogs desde vistablogs
 @app.route('/actualizarBlogs/<int:post_id>', methods=['GET', 'POST'])
 def actualizarBlogs(post_id):
-    if request.method=="GET":
-        #consulta base de datos por id del post (SELECT * FROM blogs where id_blog = {post_id})
-        titulo = "Titulo blog1"
-        cuerpo = "Lorem ipsum dolor sit amet, consectetur adipiscing Lorem ipsum dolor sit amet, consectetur adipiscing Lorem ipsum dolor sit amet, consectetur adipiscing"
-        return render_template("actualizarEntrada.html", post_id=post_id, titulo=titulo, cuerpo=cuerpo)
-    else:
-        titulo = request.form['txtTitulo']
-        cuerpo = request.form['txtCuerpo']
-        #update en ala base de datos
-        return render_template("vistaBlog.html")
+    if "usuario" in session:
+        user_id = session['usuario']
+        if request.method=="GET":
+            try:
+                with sqlite3.connect('Blogs.db') as con:
+                    con.row_factory = sqlite3.Row 
+                    cur = con.cursor()
+                    cur.execute("SELECT titulo,cuerpo FROM Blogs WHERE idBlogs=? AND id_Usuario = ?",[post_id,user_id]) 
+                    row = cur.fetchone()
+                    if row is None:
+                        flash("El blog no se encuentra")
+                    titulo = row["titulo"]
+                    cuerpo = row["cuerpo"]
+                    return render_template("actualizarEntrada.html", post_id=post_id, titulo=titulo, cuerpo=cuerpo)
+                    # return render_template('vista_estudiante.html',row = row)
+            except: 
+                con.rollback() 
+            return "No se pudo consultar"
+        else:
+            titulo = request.form['txtTitulo']
+            cuerpo = request.form['txtCuerpo']
+            try:
+                with sqlite3.connect('Blogs.db') as con: 
+                    cur = con.cursor()
+                    cur.execute("UPDATE Blogs SET titulo =?,cuerpo=? WHERE idBlogs = ?",[titulo,cuerpo,post_id])
+                    con.commit()
+                    if con.total_changes>0:
+                        mensaje = "Blog modificado"
+                    else:
+                        mensaje = "Blog no se pudo modificar"
+            except:
+                con.rollback()
+            finally:
+                return redirect(url_for('vistaBlog'))
+            #update en ala base de datos
+            # return render_template("vistaBlog.html")
 
 @app.route('/recuperar') ## Edwin Polo, para ir a la vista de recuperar contraseña
 def recuperarContraseña():
