@@ -33,10 +33,15 @@
                     </div>
                     <div class="card-body">
                         <blockquote class="blockquote mb-0">
-                            <input type="text" class="">
-                            <br><img src="{{ url_for('static', filename='editar.png') }}">
-                            <button type="button" class="btn">Escribe un comentario</button>
-
+                            <p>Comentarios</p>
+                            {%for r in row%}
+                            <li>{{r['cuer_c']}}</li>
+                            {%endfor%}
+                            <form action="" name="formulario_comentario" id="formulario_comentario" method="POST">
+                                <input type="text" name="Comments" id = "Comments" class="" placeholder="escríbe acá tu comentario">
+                                <br><img src="{{ url_for('static', filename='editar.png') }}">
+                                <input type="submit" value="Comentar" onmouseover="crearBlog()">
+                            </form>       
                         </blockquote>
                         </div>
                 </div>

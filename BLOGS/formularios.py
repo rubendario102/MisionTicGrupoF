@@ -1,4 +1,5 @@
 from flask_wtf import FlaskForm
+from wtforms import *
 from wtforms import StringField, SelectField, BooleanField, SubmitField, PasswordField
 from wtforms.validators import DataRequired
 
@@ -24,3 +25,7 @@ class formLogin(FlaskForm):
 class formActualizar(FlaskForm):
     clave1 = PasswordField("Contraseña:*",validators = [DataRequired(message="No dejar vacío, completar")],render_kw={"placeholder":"Ingresa tu contraseña"})
     clave2 = PasswordField("Confirmar contraseña:*",validators = [DataRequired(message="No dejar vacío, completar")],render_kw={"placeholder":"Confirma tu contraseña"})
+
+class formBlog(FlaskForm):
+    comentarios = StringField("Comments",validators = [DataRequired(message="No dejar vacío, completar")], render_kw={"placeholder":"COMENTARIOS"})
+    comentar = SubmitField("Comentar", render_kw={"onmouseover":"crearBlog()"})

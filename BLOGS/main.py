@@ -7,6 +7,7 @@ import os
 import hashlib
 from markupsafe import escape
 from werkzeug.security import generate_password_hash, check_password_hash
+from formularios import *
 
 app = Flask (__name__)
 app.secret_key = os.urandom(24)
@@ -94,22 +95,49 @@ def validarCampos():
         return render_template('registroUsuario.html')
 
 #Anderson: Ruta para ver el blog que se acaba de publicar
-@app.route('/blogPublicado',methods=["GET"])
+@app.route('/blogPublicado',methods=["GET","POST"])
 def crearBlog():
-    titulo = request.args.get('titulo')
-    cuerpo = request.args.get('cuerpo')
-    error = None
-    if request.method=="GET":
-        if titulo != "" and cuerpo != "":
-            return render_template('blogPublicado.html') 
+    if "usuario" in session:
+        user_id = session['usuario']    
+        titulo = request.args.get('titulo')
+        cuerpo = request.args.get('cuerpo')
+        error = None
+        if request.method=="GET":
+            if titulo != "" and cuerpo != "":
+                try:
+                    with sqlite3.connect('Blogs.db') as con:
+                        con.row_factory = sqlite3.Row 
+                        cur = con.cursor()
+                        cur.execute("select * from tbl_003_c where id_b = 1")    
+                        row = cur.fetchall()
+                        return render_template('blogPublicado.html',row = row)
+                except: 
+                    return "No se pudo recuperar comentarios"
+            else:
+                error = "Los campos titulo y cuerpo no pueden estar en blanco"
+                flash(error)
+                return render_template('crearEntrada.html')
         else:
-            error = "Los campos titulo y cuerpo no pueden estar en blanco"
-            flash(error)
-            return render_template('crearEntrada.html')
-    else:
-        error = "Metodo no permitido"
-        flash(error)
-        return render_template('crearEntrada.html')
+            if request.method == "POST":
+                comentario = escape(request.form["Comments"])
+                try:
+                    with sqlite3.connect('Blogs.db') as con: 
+                        cur = con.cursor()
+                        cur.execute("INSERT INTO tbl_003_c(id_b,id_u,cuer_c)VALUES(?,?,?)",(1,user_id,comentario))
+                        con.commit()
+                except: 
+                    con.rollback()
+                    return "No se pudo guardar"
+
+            try:
+                with sqlite3.connect('Blogs.db') as con:
+                    con.row_factory = sqlite3.Row 
+                    cur = con.cursor()
+                    cur.execute("select * from tbl_003_c where id_b = 1")    
+                    row = cur.fetchall()
+                    return render_template('blogPublicado.html',row = row)
+            except:
+                return "No se pudo recuperar comentarios"
 
 @app.route('/crearBlog')
 def crearBlog2():
@@ -189,7 +217,6 @@ def actualizarBlogs(post_id):
                 return redirect(url_for('vistaBlog'))
             #update en ala base de datos
             # return render_template("vistaBlog.html")
-
 @app.route('/recuperar') ## Edwin Polo, para ir a la vista de recuperar contraseña
 def recuperarContraseña():
     return render_template('Recuperar.html') 
