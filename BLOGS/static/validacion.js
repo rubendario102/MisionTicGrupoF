@@ -30,3 +30,7 @@ if (p1.length == 0 || p2.length == 0) {
   }
 
 }
+
+function crearBlog(){
+  document.getElementById("formulario_comentario").action="/blogPublicado";
+} 
