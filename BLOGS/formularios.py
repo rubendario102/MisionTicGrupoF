@@ -1,7 +1,9 @@
 from flask_wtf import FlaskForm
 from wtforms import *
 from wtforms import StringField, SelectField, BooleanField, SubmitField, PasswordField
-from wtforms.validators import DataRequired
+from wtforms.validators import (DataRequired, Regexp, ValidationError, Email, Length)
+#from wtforms.validators import DataRequired, Length, Regexp
+#from wtforms.validators import *
 
 class forEstudiantes(FlaskForm):
     documento = StringField("Documento",validators = [DataRequired(message="No dejar vacío, completar")], render_kw={"placeholder":"IDENTIFICACION"})
@@ -23,8 +25,8 @@ class formLogin(FlaskForm):
     guardar = SubmitField("Guardar", render_kw={"onmouseover":"insertar()"})
 
 class formActualizar(FlaskForm):
-    clave1 = PasswordField("Contraseña:*",validators = [DataRequired(message="No dejar vacío, completar")],render_kw={"placeholder":"Ingresa tu contraseña"})
-    clave2 = PasswordField("Confirmar contraseña:*",validators = [DataRequired(message="No dejar vacío, completar")],render_kw={"placeholder":"Confirma tu contraseña"})
+    clave1 = PasswordField("Contraseña:*",validators = [DataRequired(message="No dejar vacío, completar"), Length(min=5, max=20),Regexp('[0-9A-Za-z_]+')],render_kw={"placeholder":"Ingresa tu contraseña"})
+    clave2 = PasswordField("Confirmar contraseña:*",validators = [DataRequired(message="No dejar vacío, completar"), Length(min=6,message="Debe tener mínimo 6 caracteres")],render_kw={"placeholder":"Confirma tu contraseña"})
 
 class formBlog(FlaskForm):
     comentarios = StringField("Comments",validators = [DataRequired(message="No dejar vacío, completar")], render_kw={"placeholder":"COMENTARIOS"})

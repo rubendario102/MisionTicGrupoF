@@ -33,33 +33,34 @@ def registroUsuario():
     return render_template('registroUsuario.html')
 
 #Andrea: Ruta para cambiar contraseña       
-@app.route('/actualizarPassword/',methods=['POST','GET'])
-def actualizar():
-    try:
+#@app.route('/actualizarPassword',methods=['POST','GET'])
+@app.route('/actualizarPassword/<int:id_user>',methods=['GET','POST'])
+#def actualizar():
+def actualizar(id_user):
+    
+    if request.method=='GET':
         form = formActualizar()
-        if request.method=='POST':
-            clave1 = form.clave1.data
-            clave2 = form.clave2.data
-            error = None
-
-            if not utils.isPasswordValid(clave1):
-                error = "La contraseña es inválida"
-                flash(error)
-                return render_template("ActualizarContraseña.html")
-            
-            if not utils.isPasswordValid(clave2):
-                error = "La contraseña es inválida"
-                flash(error)
-                return render_template("ActualizarContraseña.html")
-
-            if clave1==clave2:
-                return render_template('vistaBlog.html')
-            else:
-                return render_template("ActualizarContraseña.html")
-        return render_template("ActualizarContraseña.html")
-    except:
-        return render_template("ActualizarContraseña.html", form = form)
-
+        return render_template("ActualizarContraseña.html",id_user=id_user,form=form)
+    else: 
+        form = formActualizar()
+        clave1 = form.clave1.data
+        clave2 = form.clave2.data
+        error = None
+        if clave1==clave2:
+            hashclave = generate_password_hash(clave1)
+            try:
+                with sqlite3.connect('Blogs.db') as con: 
+                    cur = con.cursor()
+                    cur.execute("UPDATE tbl_001_u SET cla =? WHERE id_u = ?",[hashclave,id_user])
+                    con.commit()
+                    #return "Guardado satisfactoriamente"
+                    return render_template("login.html")
+            except: 
+                con.rollback()
+            return render_template('login.html')
+        else:
+            return render_template("ActualizarContraseña.html", form=form, id_user=id_user)
+    
 #Anderson: Ruta una vez creado el usuario ser dirigido a la pagina del login
 @app.route('/login',methods=["POST","GET"])
 def validarCampos():

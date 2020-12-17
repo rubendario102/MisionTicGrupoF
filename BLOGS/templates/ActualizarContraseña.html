@@ -6,7 +6,7 @@
     <div class="flash">{{message}}</div>
     {%endfor%}
 </section>
-    <form name="fomulario" class="login" method="post" action="{{url_for('actualizar')}}"> 
+    <form name="fomulario" class="login" method="POST" action="{{url_for('actualizar',id_user=id_user)}}"> 
         <div class="form-group row">
             <div class="row w-100">
                 <div class="col text-center">
