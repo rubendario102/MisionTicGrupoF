@@ -18,15 +18,24 @@ def principal():
 
 @app.route('/vistaBlog1',methods=['POST','GET']) # Incluido por Edwin Polo, para ir de Login a VistaBlog
 def loginPost():
-    if request.method=="POST":
-        usuario= request.form['usuario']
-        clave=request.form['password']
-        if usuario=="edwin@hotmail.com" and clave=="123":
-            return redirect(url_for('vistaBlog'))
+    usuario= escape(request.form["usuario"])
+    clave= escape(request.form["clave"])
+    message=None
+    with sqlite3.connect('Blogs.db') as con:   # Aqui se abre la base de datos
+        cur = con.cursor()
+        #cur.execute("SELECT * from Usuario WHERE username = '"+usuario+"' AND clave= '"+clave+"'") de esta forma se puede realizar inyección de codigo....
+        user=cur.execute(f"SELECT cla FROM tbl_001_u WHERE em = '{usuario}'").fetchone() # Sentencia preparada no acepta inyección de codigo ....
+        if user != None:
+            clave_hash= user[0]
+            if check_password_hash(clave_hash,clave):
+                session["usuario"]=usuario  # es un array que determina quien esta logueado.
+                return render_template('vistaBlog.html')
+            else:
+                message="Contraseña incorrecta, verifique nuevamente"
+                return render_template('login.html', message=message)
         else:
-            return "Acceso Invalido"
-    else:
-        return "Metodo no permitido"
+            message="Usuario y/o contraseña incorrectos"
+            return render_template('login.html', message=message)
 
 @app.route('/registro') #incluido por Edwin Polo . ruta para ir de Vista Login a Vista Crear Usuario
 def registroUsuario():
@@ -238,6 +247,27 @@ def actualizarBlogs(post_id):
 @app.route('/recuperar') ## Edwin Polo, para ir a la vista de recuperar contraseña
 def recuperarContraseña():
     return render_template('Recuperar.html') 
+
+@app.route('/recuperarContraseña', methods=['POST','GET'])
+def recuperar():
+    correo= escape(request.form["correo"])
+    message=None
+    error=None
+    with sqlite3.connect('Blogs.db') as con:   # Aqui se abre la base de datos
+        cur = con.cursor()
+        #cur.execute("SELECT * from Usuario WHERE username = '"+usuario+"' AND clave= '"+clave+"'") de esta forma se puede realizar inyección de codigo....
+        user=cur.execute(f"SELECT id_u FROM tbl_001_u WHERE em= '{correo}'").fetchone() # Sentencia preparada no acepta inyección de codigo ....
+        if user != None:
+            id_usuario= user[0]
+            #cur.execute("SELECT email from Usuario where email=?", (correo,)) # Sentencia preparada no acepta inyección de codigo ....
+            #session["email"]=email  # es un array que determina quien esta logueado.
+            yag = yagmail.SMTP("pruebatk.8912@gmail.com","prueba123")
+            yag.send(to=correo,subject='Recuperar contraseña',contents='Bienvenido al link para recuperar contraseña <a href='+url_for('actualizar',id_user=id_usuario,_external=True)+'>Click aqui para recuperar contraseña</a>')
+            message="El acceso para recuperar tu contraseña se ha enviado al correo. Ahora puedes volver a Login:"
+            return render_template('Recuperar.html',message=message)
+        else:
+            error="Este correo no esta registrado"
+            return render_template('Recuperar.html',error=error)
 
 if __name__ == "__main__":
     #app.run(host='127.0.0.1', port = 443, ssl_context= ('micertificado.pem','llaveprivada.pem'),debug=True)
