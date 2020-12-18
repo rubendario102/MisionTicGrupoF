@@ -154,45 +154,55 @@ def crearUsuario():
 def crearBlog(post_id):
  
     if "usuario" in session:
-        user_id = session['usuario']    
-        titulo = request.args.get('titulo')
-        cuerpo = request.args.get('cuerpo')
-        error = None
-        if request.method=="GET":
-            if titulo != "" and cuerpo != "":
-                try:
-                    with sqlite3.connect('Blogs.db') as con:
-                        con.row_factory = sqlite3.Row 
-                        cur = con.cursor()
-                        cur.execute(f"select * from tbl_003_c where id_b = {post_id}")    
-                        row = cur.fetchall()
-                        return render_template('blogPublicado.html',row = row)
-                except: 
-                    return "No se pudo recuperar comentarios"
-            else:
-                error = "Los campos titulo y cuerpo no pueden estar en blanco"
-                flash(error)
-                return render_template('crearEntrada.html')
-        else:
-            if request.method == "POST":
-                comentario = escape(request.form["Comments"])
-                try:
-                    with sqlite3.connect('Blogs.db') as con: 
-                        cur = con.cursor()
-                        cur.execute("INSERT INTO tbl_003_c(id_b,id_u,cuer_c,fecha_cc,est_c)VALUES(?,?,?,CURRENT_TIMESTAMP,1)",(post_id,user_id,comentario))
-                        con.commit()
-                except: 
-                    con.rollback()
-                    return "No se pudo guardar"
-            try:
-                with sqlite3.connect('Blogs.db') as con:
-                    con.row_factory = sqlite3.Row 
-                    cur = con.cursor()
-                    cur.execute(f"select * from tbl_003_c where id_b = {post_id}")    
-                    row = cur.fetchall()
-                    return render_template('blogPublicado.html',row = row)
-            except:
-                return "No se pudo recuperar comentarios"
+        user_id = session['usuario']
+        try:
+            with sqlite3.connect('Blogs.db') as con:
+                con.row_factory = sqlite3.Row 
+                cur = con.cursor()
+                cur.execute("SELECT tit,cuer_b FROM tbl_002_b WHERE id_b=? AND id_u = ?",[post_id,user_id]) 
+                row = cur.fetchone()
+                if row is None:
+                    flash("El blog no se encuentra")
+                titulo = row["tit"]
+                cuerpo = row["cuer_b"]
+                error = None
+                if request.method=="GET":
+                    if titulo != "" and cuerpo != "":
+                        try:
+                            with sqlite3.connect('Blogs.db') as con:
+                                con.row_factory = sqlite3.Row 
+                                cur = con.cursor()
+                                cur.execute(f"select * from tbl_003_c where id_b = {post_id}")    
+                                row = cur.fetchall()
+                                return render_template('blogPublicado.html',row = row,titulo=titulo, cuerpo=cuerpo)
+                        except: 
+                            return "No se pudo recuperar comentarios"
+                    else:
+                        error = "Los campos titulo y cuerpo no pueden estar en blanco"
+                        flash(error)
+                        return render_template('crearEntrada.html')
+                else:
+                    if request.method == "POST":
+                        comentario = escape(request.form["Comments"])
+                        try:
+                            with sqlite3.connect('Blogs.db') as con: 
+                                cur = con.cursor()
+                                cur.execute("INSERT INTO tbl_003_c(id_b,id_u,cuer_c,fecha_cc,est_c)VALUES(?,?,?,CURRENT_TIMESTAMP,1)",(post_id,user_id,comentario))
+                                con.commit()
+                        except: 
+                            con.rollback()
+                            return "No se pudo guardar"
+                    try:
+                        with sqlite3.connect('Blogs.db') as con:
+                            con.row_factory = sqlite3.Row 
+                            cur = con.cursor()
+                            cur.execute(f"select * from tbl_003_c where id_b = {post_id}")    
+                            row = cur.fetchall()
+                            return render_template('blogPublicado.html',row = row,titulo=titulo, cuerpo=cuerpo)
+                    except:
+                        return "No se pudo recuperar comentarios"
+        except:
+            return "No se pudo recuperar blogs"               
     else:
         return "Acción no permitida <a href='/'>adios</a>"
 
