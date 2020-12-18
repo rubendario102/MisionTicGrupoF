@@ -159,12 +159,13 @@ def crearBlog(post_id):
             with sqlite3.connect('Blogs.db') as con:
                 con.row_factory = sqlite3.Row 
                 cur = con.cursor()
-                cur.execute("SELECT tit,cuer_b FROM tbl_002_b WHERE id_b=? AND id_u = ?",[post_id,user_id]) 
+                cur.execute("SELECT tit,cuer_b,fecha_cb FROM tbl_002_b WHERE id_b=? AND id_u = ?",[post_id,user_id]) 
                 row = cur.fetchone()
                 if row is None:
                     flash("El blog no se encuentra")
                 titulo = row["tit"]
                 cuerpo = row["cuer_b"]
+                fecha = row["fecha_cb"]
                 error = None
                 if request.method=="GET":
                     if titulo != "" and cuerpo != "":
@@ -174,7 +175,7 @@ def crearBlog(post_id):
                                 cur = con.cursor()
                                 cur.execute(f"select * from tbl_003_c where id_b = {post_id}")    
                                 row = cur.fetchall()
-                                return render_template('blogPublicado.html',row = row,titulo=titulo, cuerpo=cuerpo)
+                                return render_template('blogPublicado.html',row = row,titulo=titulo, cuerpo=cuerpo,fecha=fecha, user=user_id)
                         except: 
                             return "No se pudo recuperar comentarios"
                     else:
@@ -198,7 +199,7 @@ def crearBlog(post_id):
                             cur = con.cursor()
                             cur.execute(f"select * from tbl_003_c where id_b = {post_id}")    
                             row = cur.fetchall()
-                            return render_template('blogPublicado.html',row = row,titulo=titulo, cuerpo=cuerpo)
+                            return render_template('blogPublicado.html',row = row,titulo=titulo, cuerpo=cuerpo,fecha=fecha, user=user_id)
                     except:
                         return "No se pudo recuperar comentarios"
         except:
@@ -234,7 +235,7 @@ def crearBlog3():
                     with sqlite3.connect('Blogs.db') as con: 
                         cursor = con.cursor()
                         #borrar id del usuario
-                        cursor.execute("INSERT INTO tbl_002_b(id_u, tit, cuer_b, est_b, fecha_cb)VALUES(?,?,?,?,?)",(idUsuario, titulo, cuerpo, blog,""))
+                        cursor.execute("INSERT INTO tbl_002_b(id_u, tit, cuer_b, est_b, fecha_cb)VALUES(?,?,?,?,CURRENT_TIMESTAMP)",(idUsuario, titulo, cuerpo, blog))
                         con.commit()
                         return render_template('vistaBlog.html')
                 except:
