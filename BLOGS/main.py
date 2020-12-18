@@ -18,15 +18,25 @@ def principal():
 
 @app.route('/vistaBlog1',methods=['POST','GET']) # Incluido por Edwin Polo, para ir de Login a VistaBlog
 def loginPost():
-    if request.method=="POST":
-        usuario= request.form['usuario']
-        clave=request.form['password']
-        if usuario=="edwin@hotmail.com" and clave=="123":
-            return redirect(url_for('vistaBlog'))
+    usuario= escape(request.form["usuario"])
+    clave= escape(request.form["clave"])
+    message=None
+    with sqlite3.connect('Blogs.db') as con:   # Aqui se abre la base de datos
+        cur = con.cursor()
+        #cur.execute("SELECT * from Usuario WHERE username = '"+usuario+"' AND clave= '"+clave+"'") de esta forma se puede realizar inyección de codigo....
+        user=cur.execute(f"SELECT cla,id_u FROM tbl_001_u WHERE em = '{usuario}'").fetchone() # Sentencia preparada no acepta inyección de codigo ....
+        if user != None:
+            clave_hash= user[0]
+            id_usuario= user[1]
+            if check_password_hash(clave_hash,clave):
+                session["usuario"]=id_usuario  # es un array que determina quien esta logueado.
+                return render_template('vistaBlog.html')
+            else:
+                message="Contraseña incorrecta, verifique nuevamente"
+                return render_template('login.html', message=message)
         else:
-            return "Acceso Invalido"
-    else:
-        return "Metodo no permitido"
+            message="Usuario y/o contraseña incorrectos"
+            return render_template('login.html', message=message)
 
 @app.route('/registro') #incluido por Edwin Polo . ruta para ir de Vista Login a Vista Crear Usuario
 def registroUsuario():
@@ -34,34 +44,35 @@ def registroUsuario():
     return render_template('registroUsuario.html', form = form)
 
 #Andrea: Ruta para cambiar contraseña       
-@app.route('/actualizarPassword/',methods=['POST','GET'])
-def actualizar():
-    try:
+#@app.route('/actualizarPassword',methods=['POST','GET'])
+@app.route('/actualizarPassword/<int:id_user>',methods=['GET','POST'])
+#def actualizar():
+def actualizar(id_user):
+    
+    if request.method=='GET':
         form = formActualizar()
-        if request.method=='POST':
-            clave1 = form.clave1.data
-            clave2 = form.clave2.data
-            error = None
-
-            if not utils.isPasswordValid(clave1):
-                error = "La contraseña es inválida"
-                flash(error)
-                return render_template("ActualizarContraseña.html")
-            
-            if not utils.isPasswordValid(clave2):
-                error = "La contraseña es inválida"
-                flash(error)
-                return render_template("ActualizarContraseña.html")
-
-            if clave1==clave2:
-                return render_template('vistaBlog.html')
-            else:
-                return render_template("ActualizarContraseña.html")
-        return render_template("ActualizarContraseña.html")
-    except:
-        return render_template("ActualizarContraseña.html", form = form)
-
-#Anderson: Ruta una vez creado el usuario ser dirigido a la pagina del login y guardar usuario
+        return render_template("ActualizarContraseña.html",id_user=id_user,form=form)
+    else: 
+        form = formActualizar()
+        clave1 = form.clave1.data
+        clave2 = form.clave2.data
+        error = None
+        if clave1==clave2:
+            hashclave = generate_password_hash(clave1)
+            try:
+                with sqlite3.connect('Blogs.db') as con: 
+                    cur = con.cursor()
+                    cur.execute("UPDATE tbl_001_u SET cla =? WHERE id_u = ?",[hashclave,id_user])
+                    con.commit()
+                    #return "Guardado satisfactoriamente"
+                    return render_template("login.html")
+            except: 
+                con.rollback()
+            return render_template('login.html')
+        else:
+            return render_template("ActualizarContraseña.html", form=form, id_user=id_user)
+    
+#Anderson: Ruta una vez creado el usuario ser dirigido a la pagina del login
 @app.route('/login',methods=["POST","GET"])
 def crearUsuario():
     form = formRegistroUsuario()
@@ -129,9 +140,11 @@ def crearUsuario():
         flash(error)
         return render_template('registroUsuario.html', form = form)
 
-#Anderson: Ruta para ver el blog que ya esta publicado
-@app.route('/blogPublicado',methods=["GET","POST"])
-def crearBlog():
+
+#Anderson: Ruta para ver el blog que se acaba de publicar
+@app.route('/blogPublicado/<int:post_id>',methods=["GET","POST"])
+def crearBlog(post_id):
+ 
     if "usuario" in session:
         user_id = session['usuario']    
         titulo = request.args.get('titulo')
@@ -143,7 +156,7 @@ def crearBlog():
                     with sqlite3.connect('Blogs.db') as con:
                         con.row_factory = sqlite3.Row 
                         cur = con.cursor()
-                        cur.execute("select * from tbl_003_c where id_b = 1")    
+                        cur.execute(f"select * from tbl_003_c where id_b = {post_id}")    
                         row = cur.fetchall()
                         return render_template('blogPublicado.html',row = row)
                 except: 
@@ -158,21 +171,22 @@ def crearBlog():
                 try:
                     with sqlite3.connect('Blogs.db') as con: 
                         cur = con.cursor()
-                        cur.execute("INSERT INTO tbl_003_c(id_b,id_u,cuer_c)VALUES(?,?,?)",(1,user_id,comentario))
+                        cur.execute("INSERT INTO tbl_003_c(id_b,id_u,cuer_c,fecha_cc,est_c)VALUES(?,?,?,CURRENT_TIMESTAMP,1)",(post_id,user_id,comentario))
                         con.commit()
                 except: 
                     con.rollback()
                     return "No se pudo guardar"
-
             try:
                 with sqlite3.connect('Blogs.db') as con:
                     con.row_factory = sqlite3.Row 
                     cur = con.cursor()
-                    cur.execute("select * from tbl_003_c where id_b = 1")    
+                    cur.execute(f"select * from tbl_003_c where id_b = {post_id}")    
                     row = cur.fetchall()
                     return render_template('blogPublicado.html',row = row)
             except:
                 return "No se pudo recuperar comentarios"
+    else:
+        return "Acción no permitida <a href='/'>adios</a>"
 
 @app.route('/crearBlog')
 def crearBlog2():
@@ -224,11 +238,11 @@ def crearBlog3():
 @app.route('/eliminarBlog/<int:post_id>')
 def eliminarBlog(post_id):
     mensaje_eliminar = 'no entro '
-    estado = 'inactivo'
+    estado = 0
     try:
         with sqlite3.connect('Blogs.db') as con: 
             cur = con.cursor()
-            cur.execute("UPDATE Blogs SET estadoBlog = ? WHERE idBlogs = ?",[estado,post_id])
+            cur.execute("UPDATE tbl_002_b SET eli_b = ? WHERE id_b = ?",[estado,post_id])
             con.commit()
             if con.total_changes>0:
                 mensaje_eliminar = "Blog modificado"
@@ -244,17 +258,32 @@ def eliminarBlog(post_id):
 #Anderson: Ruta para ir a los blogs publicados desde crearEntrada
 @app.route('/vistaBlog')
 def vistaBlog():
-    session["usuario"]=1
+    # session["usuario"]=1
     user_id = session['usuario']
     try: 
         with sqlite3.connect('Blogs.db') as con:
             con.row_factory = sqlite3.Row 
             cur = con.cursor()
-            cur.execute("SELECT * from Blogs where estadoBlog = 'activo'") 
+            cur.execute("SELECT * from tbl_002_b where id_u = ? AND eli_b = 1",[user_id]) 
             row = cur.fetchall()
             return render_template('vistaBlog.html',row = row, user_id = user_id)
     except:
         return "No se pudo listar"
+
+@app.route('/buscarVistaBlog', methods=['GET', 'POST'])
+def buscarVistaBlog():
+    user_id = session['usuario']
+    if request.method=="POST":
+        data = request.form['txtBuscar']
+        try:
+            with sqlite3.connect('Blogs.db') as con:
+                con.row_factory = sqlite3.Row 
+                cur = con.cursor()
+                cur.execute("SELECT * FROM tbl_002_b WHERE tit_b LIKE '%"+data+"%' AND id_u = ? AND eli_b = 1",[user_id]) 
+                row = cur.fetchall()
+                return render_template('vistaBlog.html',row = row, user_id = user_id)
+        except:
+            return "No se pudo listar"
 
 #Ruben: Ruta para actualizar blogs desde vistablogs
 @app.route('/actualizarBlogs/<int:post_id>', methods=['GET', 'POST'])
@@ -266,12 +295,12 @@ def actualizarBlogs(post_id):
                 with sqlite3.connect('Blogs.db') as con:
                     con.row_factory = sqlite3.Row 
                     cur = con.cursor()
-                    cur.execute("SELECT titulo,cuerpo FROM Blogs WHERE idBlogs=? AND id_Usuario = ?",[post_id,user_id]) 
+                    cur.execute("SELECT tit_b,cuer_b FROM tbl_002_b WHERE id_b=? AND id_u = ?",[post_id,user_id]) 
                     row = cur.fetchone()
                     if row is None:
                         flash("El blog no se encuentra")
-                    titulo = row["titulo"]
-                    cuerpo = row["cuerpo"]
+                    titulo = row["tit_b"]
+                    cuerpo = row["cuer_b"]
                     return render_template("actualizarEntrada.html", post_id=post_id, titulo=titulo, cuerpo=cuerpo)
                     # return render_template('vista_estudiante.html',row = row)
             except: 
@@ -283,7 +312,7 @@ def actualizarBlogs(post_id):
             try:
                 with sqlite3.connect('Blogs.db') as con: 
                     cur = con.cursor()
-                    cur.execute("UPDATE Blogs SET titulo =?,cuerpo=? WHERE idBlogs = ?",[titulo,cuerpo,post_id])
+                    cur.execute("UPDATE tbl_002_b SET tit_b =?,cuer_b=? WHERE id_b = ?",[titulo,cuerpo,post_id])
                     con.commit()
                     if con.total_changes>0:
                         mensaje = "Blog modificado"
@@ -298,6 +327,27 @@ def actualizarBlogs(post_id):
 @app.route('/recuperar') ## Edwin Polo, para ir a la vista de recuperar contraseña
 def recuperarContraseña():
     return render_template('Recuperar.html') 
+
+@app.route('/recuperarContraseña', methods=['POST','GET'])
+def recuperar():
+    correo= escape(request.form["correo"])
+    message=None
+    error=None
+    with sqlite3.connect('Blogs.db') as con:   # Aqui se abre la base de datos
+        cur = con.cursor()
+        #cur.execute("SELECT * from Usuario WHERE username = '"+usuario+"' AND clave= '"+clave+"'") de esta forma se puede realizar inyección de codigo....
+        user=cur.execute(f"SELECT id_u FROM tbl_001_u WHERE em= '{correo}'").fetchone() # Sentencia preparada no acepta inyección de codigo ....
+        if user != None:
+            id_usuario= user[0]
+            #cur.execute("SELECT email from Usuario where email=?", (correo,)) # Sentencia preparada no acepta inyección de codigo ....
+            #session["email"]=email  # es un array que determina quien esta logueado.
+            yag = yagmail.SMTP("pruebatk.8912@gmail.com","prueba123")
+            yag.send(to=correo,subject='Recuperar contraseña',contents='Bienvenido al link para recuperar contraseña <a href='+url_for('actualizar',id_user=id_usuario,_external=True)+'>Click aqui para recuperar contraseña</a>')
+            message="El acceso para recuperar tu contraseña se ha enviado al correo. Ahora puedes volver a Login:"
+            return render_template('Recuperar.html',message=message)
+        else:
+            error="Este correo no esta registrado"
+            return render_template('Recuperar.html',error=error)
 
 if __name__ == "__main__":
     #app.run(host='127.0.0.1', port = 443, ssl_context= ('micertificado.pem','llaveprivada.pem'),debug=True)

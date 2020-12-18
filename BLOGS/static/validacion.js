@@ -31,9 +31,6 @@ if (p1.length == 0 || p2.length == 0) {
 
 }
 
-function crearBlog(){
-  document.getElementById("formulario_comentario").action="/blogPublicado";
-}
 
 function crearUsuario(){
   document.getElementById("fomularioUsuario").action="/login";
@@ -42,3 +39,6 @@ function crearUsuario(){
 function crearBlog(){
   document.getElementById("fomularioBlog").action="/blog";
 }
+function crearBlog(){
+  document.getElementById("formulario_comentario").action="{{ url_for('crearBlog',post_id=r['id_b']) }}";
+} 
