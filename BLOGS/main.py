@@ -118,11 +118,11 @@ def crearBlog2():
 @app.route('/eliminarBlog/<int:post_id>')
 def eliminarBlog(post_id):
     mensaje_eliminar = 'no entro '
-    estado = 'inactivo'
+    estado = 0
     try:
         with sqlite3.connect('Blogs.db') as con: 
             cur = con.cursor()
-            cur.execute("UPDATE Blogs SET estadoBlog = ? WHERE idBlogs = ?",[estado,post_id])
+            cur.execute("UPDATE tbl_002_b SET eli_b = ? WHERE id_b = ?",[estado,post_id])
             con.commit()
             if con.total_changes>0:
                 mensaje_eliminar = "Blog modificado"
@@ -144,11 +144,26 @@ def vistaBlog():
         with sqlite3.connect('Blogs.db') as con:
             con.row_factory = sqlite3.Row 
             cur = con.cursor()
-            cur.execute("SELECT * from Blogs where estadoBlog = 'activo'") 
+            cur.execute("SELECT * from tbl_002_b where id_u = ? AND eli_b = 1",[user_id]) 
             row = cur.fetchall()
             return render_template('vistaBlog.html',row = row, user_id = user_id)
     except:
         return "No se pudo listar"
+
+@app.route('/buscarVistaBlog', methods=['GET', 'POST'])
+def buscarVistaBlog():
+    user_id = session['usuario']
+    if request.method=="POST":
+        data = request.form['txtBuscar']
+        try: 
+            with sqlite3.connect('Blogs.db') as con:
+                con.row_factory = sqlite3.Row 
+                cur = con.cursor()
+                cur.execute("SELECT * FROM tbl_002_b WHERE tit_b LIKE '%"+data+"%' AND id_u = ? AND eli_b = 1",[user_id]) 
+                row = cur.fetchall()
+                return render_template('vistaBlog.html',row = row, user_id = user_id)
+        except:
+            return "No se pudo listar"
 
 #Ruben: Ruta para actualizar blogs desde vistablogs
 @app.route('/actualizarBlogs/<int:post_id>', methods=['GET', 'POST'])
@@ -160,12 +175,12 @@ def actualizarBlogs(post_id):
                 with sqlite3.connect('Blogs.db') as con:
                     con.row_factory = sqlite3.Row 
                     cur = con.cursor()
-                    cur.execute("SELECT titulo,cuerpo FROM Blogs WHERE idBlogs=? AND id_Usuario = ?",[post_id,user_id]) 
+                    cur.execute("SELECT tit_b,cuer_b FROM tbl_002_b WHERE id_b=? AND id_u = ?",[post_id,user_id]) 
                     row = cur.fetchone()
                     if row is None:
                         flash("El blog no se encuentra")
-                    titulo = row["titulo"]
-                    cuerpo = row["cuerpo"]
+                    titulo = row["tit_b"]
+                    cuerpo = row["cuer_b"]
                     return render_template("actualizarEntrada.html", post_id=post_id, titulo=titulo, cuerpo=cuerpo)
                     # return render_template('vista_estudiante.html',row = row)
             except: 
@@ -177,7 +192,7 @@ def actualizarBlogs(post_id):
             try:
                 with sqlite3.connect('Blogs.db') as con: 
                     cur = con.cursor()
-                    cur.execute("UPDATE Blogs SET titulo =?,cuerpo=? WHERE idBlogs = ?",[titulo,cuerpo,post_id])
+                    cur.execute("UPDATE tbl_002_b SET tit_b =?,cuer_b=? WHERE id_b = ?",[titulo,cuerpo,post_id])
                     con.commit()
                     if con.total_changes>0:
                         mensaje = "Blog modificado"
