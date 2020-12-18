@@ -24,11 +24,12 @@ def loginPost():
     with sqlite3.connect('Blogs.db') as con:   # Aqui se abre la base de datos
         cur = con.cursor()
         #cur.execute("SELECT * from Usuario WHERE username = '"+usuario+"' AND clave= '"+clave+"'") de esta forma se puede realizar inyección de codigo....
-        user=cur.execute(f"SELECT cla FROM tbl_001_u WHERE em = '{usuario}'").fetchone() # Sentencia preparada no acepta inyección de codigo ....
+        user=cur.execute(f"SELECT cla,id_u FROM tbl_001_u WHERE em = '{usuario}'").fetchone() # Sentencia preparada no acepta inyección de codigo ....
         if user != None:
             clave_hash= user[0]
+            id_usuario= user[1]
             if check_password_hash(clave_hash,clave):
-                session["usuario"]=usuario  # es un array que determina quien esta logueado.
+                session["usuario"]=id_usuario  # es un array que determina quien esta logueado.
                 return render_template('vistaBlog.html')
             else:
                 message="Contraseña incorrecta, verifique nuevamente"
@@ -178,7 +179,7 @@ def eliminarBlog(post_id):
 #Anderson: Ruta para ir a los blogs publicados desde crearEntrada
 @app.route('/vistaBlog')
 def vistaBlog():
-    session["usuario"]=1
+    # session["usuario"]=1
     user_id = session['usuario']
     try: 
         with sqlite3.connect('Blogs.db') as con:
@@ -195,7 +196,7 @@ def buscarVistaBlog():
     user_id = session['usuario']
     if request.method=="POST":
         data = request.form['txtBuscar']
-        try: 
+        try:
             with sqlite3.connect('Blogs.db') as con:
                 con.row_factory = sqlite3.Row 
                 cur = con.cursor()
