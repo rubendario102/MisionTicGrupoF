@@ -124,7 +124,7 @@ def crearUsuario():
                             cursor.execute("INSERT INTO tbl_001_u(usr, em, cla, tip_u, est_u) VALUES(?,?,?,?,?)",(usuario,correo,encriptada, 1,"inactivo"))
                             con.commit()
                             yag = yagmail.SMTP("pruebatk.8912@gmail.com","prueba123")
-                            yag.send(to = correo, subject="Correo de activación", contents="Bienvenido al blog")
+                            yag.send(to = correo, subject='Activar usuario', contents='Bienvenido al Blog para activar su usuario <a href='+url_for('activar',_external=True)+'>Click aqui para activar usuario</a>')
                             return render_template('login.html')
                         else:
                             error = "El correo ya existe"
@@ -237,7 +237,8 @@ def crearBlog3():
                         #borrar id del usuario
                         cursor.execute("INSERT INTO tbl_002_b(id_u, tit, cuer_b, est_b, fecha_cb)VALUES(?,?,?,?,CURRENT_TIMESTAMP)",(idUsuario, titulo, cuerpo, blog))
                         con.commit()
-                        return render_template('vistaBlog.html')
+                        variable = redirect(url_for('vistaBlog'))
+                        return variable
                 except:
                     con.rollback()
                     error = "No se pudo crear el blog"  
@@ -368,6 +369,43 @@ def recuperar():
         else:
             error="Este correo no esta registrado"
             return render_template('Recuperar.html',error=error)
+
+#Ruta para activar el usuario
+@app.route('/activar', methods=['POST','GET'])
+def activar():
+    if request.method == "POST":
+        error = None
+        correo = escape(request.form["correo"])
+        if correo != "":
+            try:
+                with sqlite3.connect('Blogs.db') as con:
+                    con.row_factory = sqlite3.Row 
+                    cursor = con.cursor()
+                    #busco si el correo ya existe
+                    cursor.execute("SELECT id_u FROM tbl_001_u WHERE em = ?",[correo]) 
+                    row = cursor.fetchone()
+                    if row != None:
+                        id_usuario= row[0]
+                        cursor.execute("UPDATE tbl_001_u SET est_u =? WHERE id_u = ?",["activo",id_usuario])
+                        con.commit()
+                        variable = redirect(url_for('principal'))
+                        return variable
+                    else:
+                        error = "Este correo no esta guardado en la base de datos"
+                        flash(error)
+                        return render_template('activar.html')
+            except:
+                error = "No se pudo activar el usuario"
+                flash(error)
+                return render_template('activar.html')
+        else:
+            error = "El campo no puede estar vacio"
+            flash(error)
+            return render_template('activar.html')
+    else:
+        error = "Metodo invalido"
+        flash(error)
+        return render_template('activar.html')
 
 if __name__ == "__main__":
     #app.run(host='127.0.0.1', port = 443, ssl_context= ('micertificado.pem','llaveprivada.pem'),debug=True)
