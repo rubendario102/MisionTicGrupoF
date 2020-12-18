@@ -32,5 +32,5 @@ if (p1.length == 0 || p2.length == 0) {
 }
 
 function crearBlog(){
-  document.getElementById("formulario_comentario").action="/blogPublicado";
+  document.getElementById("formulario_comentario").action="{{ url_for('crearBlog',post_id=r['id_b']) }}";
 } 
