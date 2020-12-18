@@ -6,33 +6,36 @@
         <div class="flash">{{message}}</div>
         {%endfor%}
     </section>
-    <form class="login" method="POST" action="/login">
+    <form  id=fomularioUsuario class="login" method="POST" action="{{url_for('crearUsuario')}}">
+        {{form.hidden_tag()}}
         <h1 style="text-align: center;">CREAR USUARIO</h1>
         <br>
         <div class="form-group row">
-            <label for="usuarioNuevo" class="col-sm-5 col-form-label text-left">Usuario:*</label>
+            <label class="col-sm-5 col-form-label text-left">{{form.usuario.label}}</label>
             <div class="col-sm-7">
-                <input type="text" class="form-control" name="usuarioNuevo" id="usuarioNuevo" aria-describedby="emailHelp" placeholder="Ingresa tu usuario">
+                {{form.usuario(class="form-control")}}
             </div>
             <br><br><br>
-            <label for="correoUsuarioNuevo" class="col-sm-5 col-form-label text-left">Correo:*</label>
+            <label class="col-sm-5 col-form-label text-left">{{form.correo.label}}</label>
             <div class="col-sm-7">
-                <input type="email" class="form-control" name="correoUsuarioNuevo" id="correoUsuarioNuevo" placeholder="Ingresa tu correo">
+                {{form.correo(class="form-control")}}
             </div>
             <br><br><br>
-            <label for="passwordUsuarioNuevo" class="col-sm-5 col-form-label text-left">Contraseña:*</label>
+            <label class="col-sm-5 col-form-label text-left">{{form.password1.label}}</label>
             <div class="col-sm-7">
-                <input type="password" class="form-control" name="passwordUsuarioNuevo" id="passwordUsuarioNuevo" placeholder="Ingresa tu contraseña">
+                {{form.password1(class="form-control")}}
             </div>
             <br><br><br>
-            <label for="confirPasswordUsuarioNuevo" class="col-sm-5 col-form-label text-left">Confirmar contraseña:*</label>
+            <label class="col-sm-5 col-form-label text-left">{{form.password2.label}}</label>
             <div class="col-sm-7">
-                <input type="password" class="form-control" name="confirPasswordUsuarioNuevo" id="confirPasswordUsuarioNuevo" placeholder="Ingresa tu contraseña de nuevo">
+                {{form.password2(class="form-control")}}
+                <!-- <input type="password" class="form-control" name="confirPasswordUsuarioNuevo" id="confirPasswordUsuarioNuevo" placeholder="Ingresa tu contraseña de nuevo">--> 
             </div>
             <br><br><br>
             <div class="row w-100">
                 <div class="col text-center">
-                    <input type="submit" id="btnCrear" class="btn btn-primary regular-button" value="CREAR USUARIO">
+                    {{form.crearUsuario(class="btn btn-primary regular-button")}}
+                    <!--<input type="submit" id="btnCrear" class="btn btn-primary regular-button" value="CREAR USUARIO">--> 
                 </div>	
             </div>
         </div>  

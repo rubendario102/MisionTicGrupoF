@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import *
-from wtforms import StringField, SelectField, BooleanField, SubmitField, PasswordField
+from wtforms import StringField, SelectField, BooleanField, SubmitField, PasswordField, TextAreaField
 from wtforms.validators import DataRequired
 
 class forEstudiantes(FlaskForm):
@@ -29,3 +29,16 @@ class formActualizar(FlaskForm):
 class formBlog(FlaskForm):
     comentarios = StringField("Comments",validators = [DataRequired(message="No dejar vacío, completar")], render_kw={"placeholder":"COMENTARIOS"})
     comentar = SubmitField("Comentar", render_kw={"onmouseover":"crearBlog()"})
+
+class formRegistroUsuario(FlaskForm):
+    usuario = StringField("Usuario:*",validators = [DataRequired(message="Debes de ingresar un usuario")], render_kw={"placeholder":"Ingresa tu usuario"})
+    correo = StringField("Correo:*", validators=[DataRequired(message="Debes de ingresar un correo")], render_kw={"placeholder":"Ingresa tu correo"})
+    password1 = PasswordField("Contraseña:*",validators=[DataRequired(message="Debes de ingresar una contraseña")],render_kw={"placeholder":"Ingresa tu contraseña"})
+    password2 = PasswordField("Confirmar contraseña:*",validators=[DataRequired(message="Debes confirmar tu contraseña")],render_kw={"placeholder":"Ingresa tu contraseña de nuevo"})
+    crearUsuario = SubmitField("CREAR USUARIO",render_kw={"onmouseover":"crearUsuario()"})
+
+class formCrearBlog(FlaskForm):
+    titulo = StringField(label = None, validators = [DataRequired(message="Debes de ingresar un título")], render_kw={"placeholder":"Título*"})
+    cuerpo = TextAreaField(label = None, validators = [DataRequired(message="Debes de ingresar algún texto")])
+    privacidad = SelectField("Privacidad:", choices= [("publico"),("privado")])
+    nuevoBlog = SubmitField("Publicar",render_kw={"onmouseover":"crearBlog()"})
