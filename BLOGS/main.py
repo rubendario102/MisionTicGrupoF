@@ -96,8 +96,9 @@ def validarCampos():
         return render_template('registroUsuario.html')
 
 #Anderson: Ruta para ver el blog que se acaba de publicar
-@app.route('/blogPublicado',methods=["GET","POST"])
-def crearBlog():
+@app.route('/blogPublicado/<int:post_id>',methods=["GET","POST"])
+def crearBlog(post_id):
+ 
     if "usuario" in session:
         user_id = session['usuario']    
         titulo = request.args.get('titulo')
@@ -109,7 +110,7 @@ def crearBlog():
                     with sqlite3.connect('Blogs.db') as con:
                         con.row_factory = sqlite3.Row 
                         cur = con.cursor()
-                        cur.execute("select * from tbl_003_c where id_b = 1")    
+                        cur.execute(f"select * from tbl_003_c where id_b = {post_id}")    
                         row = cur.fetchall()
                         return render_template('blogPublicado.html',row = row)
                 except: 
@@ -124,21 +125,22 @@ def crearBlog():
                 try:
                     with sqlite3.connect('Blogs.db') as con: 
                         cur = con.cursor()
-                        cur.execute("INSERT INTO tbl_003_c(id_b,id_u,cuer_c)VALUES(?,?,?)",(1,user_id,comentario))
+                        cur.execute("INSERT INTO tbl_003_c(id_b,id_u,cuer_c,fecha_cc,est_c)VALUES(?,?,?,CURRENT_TIMESTAMP,1)",(post_id,user_id,comentario))
                         con.commit()
                 except: 
                     con.rollback()
                     return "No se pudo guardar"
-
             try:
                 with sqlite3.connect('Blogs.db') as con:
                     con.row_factory = sqlite3.Row 
                     cur = con.cursor()
-                    cur.execute("select * from tbl_003_c where id_b = 1")    
+                    cur.execute(f"select * from tbl_003_c where id_b = {post_id}")    
                     row = cur.fetchall()
                     return render_template('blogPublicado.html',row = row)
             except:
                 return "No se pudo recuperar comentarios"
+    else:
+        return "Acción no permitida <a href='/'>adios</a>"
 
 @app.route('/crearBlog')
 def crearBlog2():
