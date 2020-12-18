@@ -1,33 +1,52 @@
 {% extends "base.html" %}
 
 {% block contenido %}
-    <div>
-        <form class="login" action="/vistaBlog1" method="POST"> 
+   <div>
+        <form class="login" action="/vistaBlog1" method="POST">
             <div class="form-group row">
-                <label for="userEmail" class="col-sm-2 col-form-label">Usuario:</label>
+                <label for="userEmail" class="col-sm-2 col-form-label"></label> 
                 <div class="col-sm-10">
-                    <input type="email" class="form-control" id="userEmail" name="usuario" aria-describedby="emailHelp" placeholder="Ingresa tu correo">
+                    {% if message %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endif %}
                 </div>
             </div>
-            <br>
+                   
             <div class="form-group row">
-                <label for="userPassword" class="col-sm-2 col-form-label">Contraseña:</label>
+                <label for="userEmail" class="col-sm-2 col-form-label"></label>
                 <div class="col-sm-10">
-                    <input type="password" class="form-control" id="userPassword" name="password" placeholder="Ingresa tu contraseña">
+                    <h1 class="h3">Login</h1>
+                    <p><small>Para acceder al Blog ingrese con su usuario y contraseña</small></p>
+                    <h3 class="h6">Correo</h3>
+                    <input type="email" class="form-control" id="usuario" name="usuario" aria-describedby="emailHelp" placeholder="Ingresa tu correo">
                 </div>
             </div>
-            <center>
-            <br>
-            <button type="submit" class="btn btn-primary boton-ingresar">Ingresar</button>
-            <br><br>
-            <a href="{{ url_for('registroUsuario') }}">Crear usuario</a>
-            <br><br>
-            <a href="{{ url_for('recuperarContraseña') }}">Recuperar contraseña</a>
-            </center>
-        
+            
+            <div class="form-group row">
+                <label for="userPassword" class="col-sm-2 col-form-label"></label>
+                <div class="col-sm-10">
+                    <h3 class="h6">Contraseña</h3>
+                    <input type="password" class="form-control" id="clave" name="clave" placeholder="Ingresa tu contraseña">
+                    <br /> 
+                    <button type="submit" class="btn btn-primary boton-ingresar">Ingresar</button>
+                    <br><br>
+                    <h3 class="h6"><a href="{{ url_for('registroUsuario') }}">Crear usuario</a></h3>
+                    <h3 class="h6"><a href="{{ url_for('recuperarContraseña') }}">Recuperar contraseña</a></h3>
+                    <br>
+                    <br>
+                    <br>
+                    <p><small>@EdwinPoloB 2020</small></p>
+
+                </div>
+            </div>
+            
+            
+                   
             
         </form>
-        </div>
+    </div>
         <!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>

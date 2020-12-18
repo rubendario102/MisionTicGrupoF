@@ -2,14 +2,35 @@
 
 {% block contenido %}
     <div>
-        <center>
-            <form class="login" action="/">
-                <label for="name">Ingresar Correo</label>
-                <input name="name" type="email" value="Ingrese correo" /> 
-                <br /> 
-                <br /> 
-                <button class="btn btn-primary" type="submit" value="Submit" onclick="alert('Verifique su correo electronico para recuperar su contraseña. Ahora será dirigido a la sesión de inicio');">Enviar Correo</button>
-            </form>
-        </center>
+        
+        <form class="login" action="/recuperarContraseña" method="POST">
+            <div class="form-group row">
+                <label for="userEmail" class="col-sm-2 col-form-label"></label>
+                <div class="col-sm-10">
+                    {% if message %}
+                    <div class="alert alert-success" role="alert">
+                        {{ message }} <a href="/" class="alert-link">Ir a Login</a>
+                    </div>
+                    {% endif %}
+                    {% if error %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ error }} 
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="userEmail" class="col-sm-2 col-form-label"></label>
+                <div class="col-sm-10">
+                    <h1 class="h3">Recupere su contraseña</h1>
+                    <p><small>Para recuperar su contraseña, ingrese su correo electrónico</small></p>
+                    <h3 class="h6">Correo</h3>
+                    <input name="correo" class="form-control" id="correo" type="email" aria-describedby="emailHelp" value="Ingrese correo" /> 
+                    <br /> 
+                    <button class="btn btn-primary" type="submit" value="Recuperar Contraseña">Recuperar Contraseña</button>
+                </div>
+            </div>
+        </form>
+        
     </div>
 {% endblock %}
