@@ -2,7 +2,7 @@ from flask import *
 
 import sqlite3
 import yagmail as yagmail
-import utils 
+import utils
 import os
 import hashlib
 from markupsafe import escape
@@ -40,7 +40,8 @@ def loginPost():
 
 @app.route('/registro') #incluido por Edwin Polo . ruta para ir de Vista Login a Vista Crear Usuario
 def registroUsuario():
-    return render_template('registroUsuario.html')
+    form = formRegistroUsuario()
+    return render_template('registroUsuario.html', form = form)
 
 #Andrea: Ruta para cambiar contraseña       
 #@app.route('/actualizarPassword',methods=['POST','GET'])
@@ -73,37 +74,72 @@ def actualizar(id_user):
     
 #Anderson: Ruta una vez creado el usuario ser dirigido a la pagina del login
 @app.route('/login',methods=["POST","GET"])
-def validarCampos():
-    try:
-        if request.method=="POST":
-            usuario = request.form['usuarioNuevo']
-            correo = request.form['correoUsuarioNuevo']
-            password1 = request.form['passwordUsuarioNuevo']
-            password2 = request.form['confirPasswordUsuarioNuevo']
-            error = None
-            if not utils.isUsernameValid(usuario):
+def crearUsuario():
+    form = formRegistroUsuario()
+    if request.method == "POST":
+        error = None
+        # Se obtienen los datos desde el formulario
+        usuario = escape(form.usuario.data)
+        correo = escape(form.correo.data)
+        password1 = escape(form.password1.data)
+        password2 = escape(form.password2.data)
+        if usuario != "" and correo != "" and password1 != "" and password2 != "":
+            # No reconoce la clase utils con WTForms
+            '''if not utils.isUsernameValid(usuario):
                 error = "El usuario debe de ser alfanumerico"
                 flash(error)
-                return render_template('registroUsuario.html')
+                return render_template('registroUsuario.html', form = form)
             if not utils.isEmailValid(correo):
                 error = "El correo no es valido"
                 flash(error)
-                return render_template('registroUsuario.html')
+                return render_template('registroUsuario.html', form = form)
             if not utils.isPasswordValid(password1):
                 error = "La contraseña 1 no es valida"
                 flash(error)
-                return render_template('registroUsuario.html')
+                return render_template('registroUsuario.html', form = form)
             if not utils.isPasswordValid(password2):
                 error = "La contraseña 2 no es valida"
                 flash(error)
-                return render_template('registroUsuario.html')
-            yag = yagmail.SMTP("pruebatk.8912@gmail.com","prueba123")
-            yag.send(to = correo, subject="Correo de activación", contents="Bienvenido al blog")
-            flash("Revisa tu correo para activar tu cuenta")
-            return render_template('login.html')
-        return render_template('registroUsuario.html')
-    except:
-        return render_template('registroUsuario.html')
+                return render_template('registroUsuario.html', form = form)'''
+            if password1 == password2:
+                try:
+                    #Conexión a la base de datos para guardar el usuario
+                    encriptada = generate_password_hash(password1)
+                    with sqlite3.connect('Blogs.db') as con:
+                        con.row_factory = sqlite3.Row 
+                        cursor = con.cursor()
+                        #busco si el correo ya existe
+                        cursor.execute("SELECT usr,em FROM tbl_001_u WHERE em = ?",[correo]) 
+                        row = cursor.fetchone()
+                        if row is None:
+                            #si el correo no esta en la base de datos guardo el usuario
+                            cursor.execute("INSERT INTO tbl_001_u(usr, em, cla, tip_u, est_u) VALUES(?,?,?,?,?)",(usuario,correo,encriptada, 1,"inactivo"))
+                            con.commit()
+                            yag = yagmail.SMTP("pruebatk.8912@gmail.com","prueba123")
+                            yag.send(to = correo, subject="Correo de activación", contents="Bienvenido al blog")
+                            return render_template('login.html')
+                        else:
+                            error = "El correo ya existe"
+                            flash(error)
+                            return render_template('registroUsuario.html', form = form)
+                except:
+                    con.rollback()
+                    error = "No se pudo insertar el usuario"
+                    flash(error)
+                    return render_template('registroUsuario.html', form = form)
+            else:
+                error = "Las contraseñas no son iguales"
+                flash(error)
+                return render_template('registroUsuario.html', form = form)
+        else:
+            error = "Todos los campos son obligatorios"
+            flash(error)
+            return render_template('registroUsuario.html', form = form)
+    else:
+        error = "Metodo invalido"
+        flash(error)
+        return render_template('registroUsuario.html', form = form)
+
 
 #Anderson: Ruta para ver el blog que se acaba de publicar
 @app.route('/blogPublicado/<int:post_id>',methods=["GET","POST"])
@@ -154,7 +190,50 @@ def crearBlog(post_id):
 
 @app.route('/crearBlog')
 def crearBlog2():
-    return render_template('crearEntrada.html')
+    if "usuario" in session:
+        form = formCrearBlog()
+        return render_template('crearEntrada.html', form = form)
+    else:
+        return render_template('login.html')
+
+#Anderson: Guardar Blog
+@app.route('/blog')
+def crearBlog3():
+    if "usuario" in session:
+        form = formCrearBlog()
+        if request.method == "GET":
+            idUsuario = session['usuario']    
+            titulo = escape(request.args.get('titulo'))
+            cuerpo = escape(request.args.get('cuerpo'))
+            estado = request.args.get('privacidad')
+            if estado == "0":
+                blog = "publico"
+            else:
+                blog = "privado"
+            error = None
+            if titulo != "" and cuerpo != "":
+                try:
+                    with sqlite3.connect('Blogs.db') as con: 
+                        cursor = con.cursor()
+                        #borrar id del usuario
+                        cursor.execute("INSERT INTO tbl_002_b(id_u, tit, cuer_b, est_b, fecha_cb)VALUES(?,?,?,?,?)",(idUsuario, titulo, cuerpo, blog,""))
+                        con.commit()
+                        return render_template('vistaBlog.html')
+                except:
+                    con.rollback()
+                    error = "No se pudo crear el blog"  
+                    flash(error)
+                    return render_template('crearEntrada.html', form = form)
+            else:
+                error = "Los campos no pueden estar vacios"
+                flash(error)
+                return render_template('crearEntrada.html', form = form)
+        else:
+            error = "Metodo invalido"
+            flash(error)
+            return render_template('crearEntrada.html', form = form)
+    else:
+        return render_template('login.html')
 
 @app.route('/eliminarBlog/<int:post_id>')
 def eliminarBlog(post_id):

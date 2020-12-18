@@ -11,7 +11,7 @@
     </nav>
     <br>
     <h1 style="text-align: center;">CREAR BLOG</h1>
-    <form method="GET" action="blogPublicado">
+    <form method="GET" action="{{url_for('crearBlog3')}}">
         <div id="contenedor-principal">
             <!-- Contenido de la pagina -->
             <div id="contenido-pagina">
@@ -19,9 +19,11 @@
                     <div class="row">
                         <div class="col-lg-12"> 
                             <br>
-                            <input id="titulo" name="titulo" type="text" placeholder="Titulo*" class="form-control input-md">
+                            {{form.titulo(class="form-control input-md")}}
+                            <!-- <input id="titulo" name="titulo" type="text" placeholder="Titulo*" class="form-control input-md"> -->
                             <br>
-                            <textarea id="cuerpo" name="cuerpo" class="form-control"></textarea>
+                            {{form.cuerpo(class="form-control")}}
+                            <!-- <textarea id="cuerpo" name="cuerpo" class="form-control"></textarea> -->
                         </div>
                     </div>
                 </div>
@@ -31,11 +33,12 @@
             <div id="contenido-barra">
                 <input type="submit" value="Publicar" class="btn btn-primary">
                 <br>
-                <label>Privacidad:</label>
+                <label>{{form.privacidad.label}}</label>
+                <!--{{form.privacidad(class="btn btn-primary")}}-->
                 <select id="privacidad" name="privacidad" class="btn btn-primary item-lista">
                     <option value="0">Público</option>
                     <option value="1">Privado</option>
-                </select>   
+                </select>
             </div>
         </div>
     </form>
