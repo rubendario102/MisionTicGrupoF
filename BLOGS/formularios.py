@@ -28,7 +28,7 @@ class formActualizar(FlaskForm):
 
 class formBlog(FlaskForm):
     comentarios = StringField("Comments",validators = [DataRequired(message="No dejar vacío, completar")], render_kw={"placeholder":"COMENTARIOS"})
-    comentar = SubmitField("Comentar", render_kw={"onmouseover":"crearBlog()"})
+    comentar = SubmitField("Comentar", render_kw={"onmouseover":"crearBlog2()"})
 
 class formRegistroUsuario(FlaskForm):
     usuario = StringField("Usuario:*",validators = [DataRequired(message="Debes de ingresar un usuario")], render_kw={"placeholder":"Ingresa tu usuario"})

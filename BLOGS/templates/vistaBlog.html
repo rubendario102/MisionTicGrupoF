@@ -24,7 +24,7 @@
                 <div class="col-6 offset-3">
                     <div class="card">
                         <div class="card-header">
-                        <a href="{{ url_for('crearBlog',post_id=r['id_b']) }}"> {{r["tit_b"]}} </a>
+                        <a href="{{ url_for('crearBlog',post_id=r['id_b']) }}"> {{r["tit"]}} </a>
                         {% if r["id_u"] == user_id %} 
                         <span class="float-right"><a href="{{ url_for('actualizarBlogs',post_id=r['id_b']) }}"><img src="{{ url_for('static', filename='editar.png') }}"></a> <a href="{{ url_for('eliminarBlog',post_id=r['id_b']) }}"><img src="{{ url_for('static', filename='eliminar.png') }}"></a></span> 
                         {% endif %} 

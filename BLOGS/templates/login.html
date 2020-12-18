@@ -2,7 +2,7 @@
 
 {% block contenido %}
    <div>
-        <form class="login" action="/vistaBlog1" method="POST">
+        <form class="login" action="{{ url_for('loginPost') }}" method="POST">
             <div class="form-group row">
                 <label for="userEmail" class="col-sm-2 col-form-label"></label> 
                 <div class="col-sm-10">

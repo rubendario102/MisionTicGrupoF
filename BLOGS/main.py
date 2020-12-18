@@ -24,16 +24,24 @@ def loginPost():
     with sqlite3.connect('Blogs.db') as con:   # Aqui se abre la base de datos
         cur = con.cursor()
         #cur.execute("SELECT * from Usuario WHERE username = '"+usuario+"' AND clave= '"+clave+"'") de esta forma se puede realizar inyección de codigo....
-        user=cur.execute(f"SELECT cla,id_u FROM tbl_001_u WHERE em = '{usuario}'").fetchone() # Sentencia preparada no acepta inyección de codigo ....
+        user=cur.execute(f"SELECT cla,id_u,est_u FROM tbl_001_u WHERE em = '{usuario}'").fetchone() # Sentencia preparada no acepta inyección de codigo ....
         if user != None:
             clave_hash= user[0]
             id_usuario= user[1]
-            if check_password_hash(clave_hash,clave):
-                session["usuario"]=id_usuario  # es un array que determina quien esta logueado.
-                return render_template('vistaBlog.html')
+            est_us= user[2]
+            if est_us=="activo":
+                if check_password_hash(clave_hash,clave):
+                    session["usuario"]=id_usuario  # es un array que determina quien esta logueado.
+                    variable = redirect(url_for('vistaBlog'))
+                    return variable
+
+                else:
+                    message="Contraseña incorrecta, verifique nuevamente"
+                    return render_template('login.html', message=message)
             else:
-                message="Contraseña incorrecta, verifique nuevamente"
+                message="Usuario inactivo"
                 return render_template('login.html', message=message)
+
         else:
             message="Usuario y/o contraseña incorrectos"
             return render_template('login.html', message=message)
@@ -256,7 +264,7 @@ def eliminarBlog(post_id):
     # return render_template("vistaBlog.html")
 
 #Anderson: Ruta para ir a los blogs publicados desde crearEntrada
-@app.route('/vistaBlog')
+@app.route('/vistaBlog', methods=['GET', 'POST'])
 def vistaBlog():
     # session["usuario"]=1
     user_id = session['usuario']
@@ -295,16 +303,17 @@ def actualizarBlogs(post_id):
                 with sqlite3.connect('Blogs.db') as con:
                     con.row_factory = sqlite3.Row 
                     cur = con.cursor()
-                    cur.execute("SELECT tit_b,cuer_b FROM tbl_002_b WHERE id_b=? AND id_u = ?",[post_id,user_id]) 
+                    cur.execute("SELECT tit,cuer_b FROM tbl_002_b WHERE id_b=? AND id_u = ?",[post_id,user_id]) 
                     row = cur.fetchone()
                     if row is None:
                         flash("El blog no se encuentra")
-                    titulo = row["tit_b"]
+                    titulo = row["tit"]
                     cuerpo = row["cuer_b"]
                     return render_template("actualizarEntrada.html", post_id=post_id, titulo=titulo, cuerpo=cuerpo)
                     # return render_template('vista_estudiante.html',row = row)
             except: 
                 con.rollback() 
+                return "error consulta"
             return "No se pudo consultar"
         else:
             titulo = request.form['txtTitulo']
@@ -312,7 +321,7 @@ def actualizarBlogs(post_id):
             try:
                 with sqlite3.connect('Blogs.db') as con: 
                     cur = con.cursor()
-                    cur.execute("UPDATE tbl_002_b SET tit_b =?,cuer_b=? WHERE id_b = ?",[titulo,cuerpo,post_id])
+                    cur.execute("UPDATE tbl_002_b SET tit =?,cuer_b=? WHERE id_b = ?",[titulo,cuerpo,post_id])
                     con.commit()
                     if con.total_changes>0:
                         mensaje = "Blog modificado"

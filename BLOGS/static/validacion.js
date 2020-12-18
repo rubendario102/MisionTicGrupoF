@@ -39,6 +39,6 @@ function crearUsuario(){
 function crearBlog(){
   document.getElementById("fomularioBlog").action="/blog";
 }
-function crearBlog(){
+function crearBlog2(){
   document.getElementById("formulario_comentario").action="{{ url_for('crearBlog',post_id=r['id_b']) }}";
 } 
