@@ -10,7 +10,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from formularios import *
 
 app = Flask (__name__)
-app.secret_key = os.urandom(24)
+SECRET_KEY = '123'
+app.secret_key = SECRET_KEY
 
 @app.route('/') # Incluido por Edwin Polo. Abre la Vista de login
 def principal():
@@ -278,8 +279,7 @@ def eliminarBlog(post_id):
 #Anderson: Ruta para ir a los blogs publicados desde crearEntrada
 @app.route('/vistaBlog', methods=['GET', 'POST'])
 def vistaBlog():
-    # session["usuario"]=1
-    user_id = session['usuario']
+    user_id = session["usuario"]
     try: 
         with sqlite3.connect('Blogs.db') as con:
             con.row_factory = sqlite3.Row 
@@ -408,5 +408,5 @@ def activar():
         return render_template('activar.html')
 
 if __name__ == "__main__":
-    #app.run(host='0.0.0.0', port = 443, ssl_context= ('micertificado.pem','llaveprivada.pem'),debug=True)
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port = 443, ssl_context= ('micertificado.pem','llaveprivada.pem'),debug=True)
+   # app.run(debug=True)
