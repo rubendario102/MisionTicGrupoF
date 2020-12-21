@@ -31,8 +31,8 @@ class formBlog(FlaskForm):
     comentar = SubmitField("Comentar", render_kw={"onmouseover":"crearBlog2()"})
 
 class formRegistroUsuario(FlaskForm):
-    usuario = StringField("Usuario:*",validators = [DataRequired(message="Debes de ingresar un usuario")], render_kw={"placeholder":"Ingresa tu usuario"})
-    correo = StringField("Correo:*", validators=[DataRequired(message="Debes de ingresar un correo")], render_kw={"placeholder":"Ingresa tu correo"})
+    usuario = StringField("Usuario:*",validators = [DataRequired(message="Debes de ingresar un usuario"), Length(min=5, max=20),Regexp('[0-9A-Za-z_]+')], render_kw={"placeholder":"Ingresa tu usuario"})
+    correo = StringField("Correo:*", validators=[DataRequired(message="Debes de ingresar un correo"), Length(min=6,message="Debe tener mínimo 6 caracteres")], render_kw={"placeholder":"Ingresa tu correo"})
     password1 = PasswordField("Contraseña:*",validators=[DataRequired(message="Debes de ingresar una contraseña")],render_kw={"placeholder":"Ingresa tu contraseña"})
     password2 = PasswordField("Confirmar contraseña:*",validators=[DataRequired(message="Debes confirmar tu contraseña")],render_kw={"placeholder":"Ingresa tu contraseña de nuevo"})
     crearUsuario = SubmitField("CREAR USUARIO",render_kw={"onmouseover":"crearUsuario()"})

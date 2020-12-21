@@ -63,22 +63,27 @@ def actualizar(id_user):
         return render_template("ActualizarContraseña.html",id_user=id_user,form=form)
     else: 
         form = formActualizar()
-        clave1 = form.clave1.data
-        clave2 = form.clave2.data
-        error = None
-        if clave1==clave2:
-            hashclave = generate_password_hash(clave1)
-            try:
-                with sqlite3.connect('Blogs.db') as con: 
-                    cur = con.cursor()
-                    cur.execute("UPDATE tbl_001_u SET cla =? WHERE id_u = ?",[hashclave,id_user])
-                    con.commit()
-                    #return "Guardado satisfactoriamente"
-                    return render_template("login.html")
-            except: 
-                con.rollback()
-            return render_template('login.html')
+        if form.validate_on_submit():
+            clave1 = form.clave1.data
+            clave2 = form.clave2.data
+            error = None
+            if clave1==clave2:
+                hashclave = generate_password_hash(clave1)
+                try:
+                    with sqlite3.connect('Blogs.db') as con: 
+                        cur = con.cursor()
+                        cur.execute("UPDATE tbl_001_u SET cla =? WHERE id_u = ?",[hashclave,id_user])
+                        con.commit()
+                        #return "Guardado satisfactoriamente"
+                        return render_template("login.html")
+                except: 
+                    con.rollback()
+                return render_template('login.html')
+            else:
+                return render_template("ActualizarContraseña.html", form=form, id_user=id_user)
         else:
+            error = "Verifique los campos"
+            flash(error)
             return render_template("ActualizarContraseña.html", form=form, id_user=id_user)
     
 #Anderson: Ruta una vez creado el usuario ser dirigido a la pagina del login
@@ -92,7 +97,7 @@ def crearUsuario():
         correo = escape(form.correo.data)
         password1 = escape(form.password1.data)
         password2 = escape(form.password2.data)
-        if usuario != "" and correo != "" and password1 != "" and password2 != "":
+        if usuario != "" and correo != "" and password1 != "" and password2 != "" and form.validate_on_submit():
             # No reconoce la clase utils con WTForms
             '''if not utils.isUsernameValid(usuario):
                 error = "El usuario debe de ser alfanumerico"
@@ -141,7 +146,7 @@ def crearUsuario():
                 flash(error)
                 return render_template('registroUsuario.html', form = form)
         else:
-            error = "Todos los campos son obligatorios"
+            error = "Verifique los campos"
             flash(error)
             return render_template('registroUsuario.html', form = form)
     else:
@@ -409,4 +414,4 @@ def activar():
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port = 443, ssl_context= ('micertificado.pem','llaveprivada.pem'),debug=True)
-   # app.run(debug=True)
+    #app.run(debug=True)
