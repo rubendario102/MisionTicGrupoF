@@ -407,6 +407,6 @@ def activar():
         flash(error)
         return render_template('activar.html')
 
-if __name__ == "__main__":   
-    #app.run(host='0.0.0.0', port = 443, ssl_context= ('micertificado.pem','llaveprivada.pem'),debug=True)
-    app.run(debug=True)
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port = 443, ssl_context= ('micertificado.pem','llaveprivada.pem'),debug=True)
+    #app.run(debug=True)
