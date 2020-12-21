@@ -63,27 +63,22 @@ def actualizar(id_user):
         return render_template("ActualizarContraseña.html",id_user=id_user,form=form)
     else: 
         form = formActualizar()
-        if form.validate_on_submit():
-            clave1 = form.clave1.data
-            clave2 = form.clave2.data
-            error = None
-            if clave1==clave2:
-                hashclave = generate_password_hash(clave1)
-                try:
-                    with sqlite3.connect('Blogs.db') as con: 
-                        cur = con.cursor()
-                        cur.execute("UPDATE tbl_001_u SET cla =? WHERE id_u = ?",[hashclave,id_user])
-                        con.commit()
-                        #return "Guardado satisfactoriamente"
-                        return render_template("login.html")
-                except: 
-                    con.rollback()
-                return render_template('login.html')
-            else:
-                return render_template("ActualizarContraseña.html", form=form, id_user=id_user)
+        clave1 = form.clave1.data
+        clave2 = form.clave2.data
+        error = None
+        if clave1==clave2:
+            hashclave = generate_password_hash(clave1)
+            try:
+                with sqlite3.connect('Blogs.db') as con: 
+                    cur = con.cursor()
+                    cur.execute("UPDATE tbl_001_u SET cla =? WHERE id_u = ?",[hashclave,id_user])
+                    con.commit()
+                    #return "Guardado satisfactoriamente"
+                    return render_template("login.html")
+            except: 
+                con.rollback()
+            return render_template('login.html')
         else:
-            error = "Verifique los campos"
-            flash(error)
             return render_template("ActualizarContraseña.html", form=form, id_user=id_user)
     
 #Anderson: Ruta una vez creado el usuario ser dirigido a la pagina del login
@@ -146,7 +141,7 @@ def crearUsuario():
                 flash(error)
                 return render_template('registroUsuario.html', form = form)
         else:
-            error = "Verifique los campos"
+            error = "Todos los campos son obligatorios"
             flash(error)
             return render_template('registroUsuario.html', form = form)
     else:
@@ -165,7 +160,7 @@ def crearBlog(post_id):
             with sqlite3.connect('Blogs.db') as con:
                 con.row_factory = sqlite3.Row 
                 cur = con.cursor()
-                cur.execute("SELECT tit,cuer_b,fecha_cb FROM tbl_002_b WHERE id_b=? AND id_u = ?",[post_id,user_id]) 
+                cur.execute(f"SELECT tit,cuer_b,fecha_cb FROM tbl_002_b WHERE id_b={post_id}") 
                 row = cur.fetchone()
                 if row is None:
                     flash("El blog no se encuentra")
@@ -289,7 +284,7 @@ def vistaBlog():
         with sqlite3.connect('Blogs.db') as con:
             con.row_factory = sqlite3.Row 
             cur = con.cursor()
-            cur.execute("SELECT * from tbl_002_b where id_u = ? AND eli_b = 1",[user_id]) 
+            cur.execute("SELECT * from tbl_002_b where id_u = ? AND eli_b = 1 or est_b = 'publico' and eli_b = 1",[user_id]) 
             row = cur.fetchall()
             return render_template('vistaBlog.html',row = row, user_id = user_id)
     except:
@@ -412,6 +407,6 @@ def activar():
         flash(error)
         return render_template('activar.html')
 
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', port = 443, ssl_context= ('micertificado.pem','llaveprivada.pem'),debug=True)
-    #app.run(debug=True)
+if __name__ == "__main__":   
+    #app.run(host='0.0.0.0', port = 443, ssl_context= ('micertificado.pem','llaveprivada.pem'),debug=True)
+    app.run(debug=True)
